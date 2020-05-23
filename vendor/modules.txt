@@ -17,8 +17,6 @@ github.com/go-kit/kit/log
 github.com/go-kit/kit/log/level
 # github.com/go-logfmt/logfmt v0.4.0
 github.com/go-logfmt/logfmt
-# github.com/gobuffalo/here v0.6.0
-github.com/gobuffalo/here
 # github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
 # github.com/golang/snappy v0.0.1
@@ -45,12 +43,6 @@ github.com/konsorten/go-windows-terminal-sequences
 github.com/kr/logfmt
 # github.com/magiconair/properties v1.8.1
 github.com/magiconair/properties
-# github.com/markbates/pkger v0.13.0
-## explicit
-github.com/markbates/pkger
-github.com/markbates/pkger/internal/maps
-github.com/markbates/pkger/pkging
-github.com/markbates/pkger/pkging/stdos
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/mitchellh/mapstructure v1.1.2
@@ -149,4 +141,5 @@ golang.org/x/text/unicode/norm
 # gopkg.in/ini.v1 v1.51.0
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.7
+## explicit
 gopkg.in/yaml.v2
