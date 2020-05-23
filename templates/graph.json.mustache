@@ -1,0 +1,105 @@
+{
+  "aliasColors": {},
+  "bars": false,
+  "dashLength": 10,
+  "dashes": false,
+  "datasource": "{{{Datasource}}}",
+  "fill": 1,
+  "gridPos": {
+    "h": {{{Height}}},
+    "w": {{{Width}}},
+    "x": {{PosX}},
+    "y": {{PosY}}
+  },
+  "legend": {
+    "avg": false,
+    "current": false,
+    "hideEmpty": true,
+    "hideZero": true,
+    "max": false,
+    "min": false,
+{{#HasLegend}}
+    "show": true,
+{{/HasLegend}}
+{{^HasLegend}}
+    "show": false,
+{{/HasLegend}}
+    "total": false,
+    "values": false
+  },
+  "lines": true,
+  "linewidth": 1,
+  "links": [],
+  "nullPointMode": "null",
+  "options": {},
+  "percentage": false,
+  "pointradius": 2,
+  "points": false,
+  "renderer": "flot",
+  "seriesOverrides": [],
+  "spaceLength": 10,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+{{#Queries}}
+    {
+      "expr": "{{{Query}}}",
+      "format": "time_series",
+      "intervalFactor": 1,
+      "legendFormat": "{{{Legend}}}",
+      "refId": ""
+    }{{#HasMore}},{{/HasMore}}
+{{/Queries}}
+  ],
+  "thresholds": [
+{{#HasThreshold}}
+    {
+      "colorMode": "critical",
+      "fill": true,
+      "line": true,
+      "op": "{{{ThresholdOP}}}",
+      "value": {{{ThresholdValue}}},
+      "yaxis": "left"
+    }
+{{/HasThreshold}}
+  ],
+  "timeFrom": null,
+  "timeRegions": [],
+  "timeShift": null,
+  "title": "{{{Title}}}",
+  "tooltip": {
+    "shared": true,
+    "sort": 2,
+    "value_type": "individual"
+  },
+  "type": "graph",
+  "xaxis": {
+    "buckets": null,
+    "mode": "time",
+    "name": null,
+    "show": true,
+    "values": []
+  },
+  "yaxes": [
+    {
+      "format": "{{Format}}",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    }
+  ],
+  "yaxis": {
+    "align": false,
+    "alignLevel": null
+  }
+}

@@ -1,0 +1,23 @@
+groups:
+  - name: TestPanels
+    rules:
+      - alert: PrometheusNotIngestingSamples
+        expr: rate(prometheus_tsdb_head_samples_appended_total[5m]) <= 0
+        for: 10m
+
+      - alert: PrometheusLargeScrapes
+        expr: increase(prometheus_target_scrapes_exceeded_sample_limit_total[30m]) > 60
+
+      - alert: NodeDown
+        expr: 1 < up
+        for: 1m
+
+      - alert: PrometheusNotConnectedToAlertmanagers
+        expr: 1 > prometheus_notifications_alertmanagers_discovered
+        for: 10m
+
+      - alert: PrometheusUp
+        expr: sum(up{job="prometheus"}) < 1
+        for: 1m
+        annotations:
+          ab_title: Prometheus Up

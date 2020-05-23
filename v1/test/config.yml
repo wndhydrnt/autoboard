@@ -1,0 +1,11 @@
+filters: []
+
+grafana:
+  datasource_default: test_datasource
+  address: http://admin:admin@localhost:12959
+
+log:
+  level: debug
+
+prometheus:
+  address: http://localhost:12958
