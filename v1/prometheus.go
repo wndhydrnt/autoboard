@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	settingPrefix = "atd_"
+	settingPrefix = "ab_"
 )
 
 func SetPrefix(p string) {
