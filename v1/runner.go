@@ -2,12 +2,13 @@ package v1
 
 import (
 	"fmt"
+	"regexp"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/wndhydrnt/autoboard/v1/config"
 )
 
-func Run(cfg config.Config) error {
+func Run(cfg config.Config, filters []*regexp.Regexp) error {
 	SetPrefix(cfg.SettingsPrefix)
 	log.SetLevel(cfg.LogLevel)
 	promapi, err := NewPrometheusAPI(cfg.PrometheusAddress)
@@ -17,7 +18,7 @@ func Run(cfg config.Config) error {
 
 	p := &Prometheus{
 		DatasourceDefault: cfg.DatasourceDefault,
-		Filters:           cfg.Filters,
+		Filters:           filters,
 		PromAPI:           promapi,
 	}
 	boards, err := p.ReadAlerts()

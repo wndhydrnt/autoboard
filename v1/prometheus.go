@@ -69,7 +69,7 @@ func (p *Prometheus) ReadAlerts() (boards []Dashboard, err error) {
 
 func (p *Prometheus) isAllowed(name string) bool {
 	if len(p.Filters) == 0 {
-		return true
+		return false
 	}
 
 	for _, f := range p.Filters {

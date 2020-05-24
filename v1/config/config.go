@@ -3,7 +3,6 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/hoisie/mustache"
@@ -13,7 +12,6 @@ import (
 
 type Config struct {
 	DatasourceDefault  string
-	Filters            []*regexp.Regexp
 	GrafanaAddress     string
 	LogLevel           log.Level
 	PrometheusAddress  string
@@ -46,16 +44,6 @@ func Parse(path string) (cfg Config, _ error) {
 		return cfg, fmt.Errorf("parse log level: %w", err)
 	}
 
-	filters := []*regexp.Regexp{}
-	for _, rs := range viper.GetStringSlice("filters") {
-		re, err := regexp.Compile(rs)
-		if err != nil {
-			return cfg, fmt.Errorf("compile regexp '%s': %w", rs, err)
-		}
-
-		filters = append(filters, re)
-	}
-
 	dashboardTpl, err := readTemplate("templates.dashboard", dashboardTplDefault)
 	if err != nil {
 		return cfg, fmt.Errorf("read dashboard template: %w", err)
@@ -73,7 +61,6 @@ func Parse(path string) (cfg Config, _ error) {
 
 	return Config{
 		DatasourceDefault:  viper.GetString("grafana.datasource_default"),
-		Filters:            filters,
 		GrafanaAddress:     viper.GetString("grafana.address"),
 		LogLevel:           logLvl,
 		PrometheusAddress:  viper.GetString("prometheus.address"),

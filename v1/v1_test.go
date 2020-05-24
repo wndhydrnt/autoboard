@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ type grafanaGetDashboardResponse struct {
 func TestDashboardGeneration(t *testing.T) {
 	cfg, err := config.Parse("./test/config.yml")
 	require.NoError(t, err)
-	err = Run(cfg)
+	err = Run(cfg, []*regexp.Regexp{regexp.MustCompile(".*")})
 	require.NoError(t, err)
 
 	searchResp, err := http.Get("http://admin:admin@127.0.0.1:12959/api/search")
