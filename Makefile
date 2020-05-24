@@ -1,5 +1,9 @@
+VERSION ?= master
+GIT_COMMIT ?= $(shell git rev-list -1 HEAD)
+BUILD_DATE ?= $(shell date)
+
 build:
-	go build ./cmd/autoboard
+	go build -ldflags "-X 'github.com/wndhydrnt/autoboard/cmd.BuildDate=${BUILD_DATE}' -X 'github.com/wndhydrnt/autoboard/cmd.BuildHash=${GIT_COMMIT}' -X 'github.com/wndhydrnt/autoboard/cmd.Version=${VERSION}'"
 
 test:
 	go test ./...
