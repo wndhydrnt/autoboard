@@ -7,7 +7,7 @@ import (
 
 	"github.com/hoisie/mustache"
 	pav1 "github.com/prometheus/client_golang/api/prometheus/v1"
-	"github.com/prometheus/prometheus/promql"
+	"github.com/prometheus/prometheus/promql/parser"
 )
 
 type Dashboard struct {
@@ -94,12 +94,12 @@ func (r *Renderer) Render(db Dashboard) string {
 }
 
 func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r interface{}, err error) {
-	expr, err := promql.ParseExpr(alert.Query)
+	expr, err := parser.ParseExpr(alert.Query)
 	if err != nil {
 		return r, fmt.Errorf("parse query expression: %w", err)
 	}
 
-	be, ok := expr.(*promql.BinaryExpr)
+	be, ok := expr.(*parser.BinaryExpr)
 	if !ok {
 		return r, fmt.Errorf("query is not a binary expression")
 	}
@@ -107,19 +107,19 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 	datasource := settingString(alert, "datasource", datasourceDef)
 	format := settingString(alert, "format", defaultFormat)
 	lhsHasGrouping := false
-	lhsAggr, lhsIsAggregate := be.LHS.(*promql.AggregateExpr)
+	lhsAggr, lhsIsAggregate := be.LHS.(*parser.AggregateExpr)
 	if lhsIsAggregate {
 		lhsHasGrouping = len(lhsAggr.Grouping) > 0
 	}
 
-	if lhsIsAggregate && be.RHS.Type() == promql.ValueTypeScalar && !lhsHasGrouping {
+	if lhsIsAggregate && be.RHS.Type() == parser.ValueTypeScalar && !lhsHasGrouping {
 		ss := Singlestat{
 			Datasource:         datasource,
 			Format:             format,
 			Height:             panelHeight,
 			Query:              escapeQuery(be.LHS.String()),
-			ThresholdInvertNo:  be.Op == promql.ItemGTR || be.Op == promql.ItemGTE,
-			ThresholdInvertYes: be.Op == promql.ItemLSS || be.Op == promql.ItemLTE,
+			ThresholdInvertNo:  be.Op == parser.GTR || be.Op == parser.GTE,
+			ThresholdInvertYes: be.Op == parser.LSS || be.Op == parser.LTE,
 			ThresholdValue:     be.RHS.String(),
 			Width:              panelWidth,
 		}
@@ -128,19 +128,19 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 	}
 
 	rhsHasGrouping := false
-	rhsAggr, rhsIsAggregate := be.RHS.(*promql.AggregateExpr)
+	rhsAggr, rhsIsAggregate := be.RHS.(*parser.AggregateExpr)
 	if rhsIsAggregate {
 		rhsHasGrouping = len(rhsAggr.Grouping) > 0
 	}
 
-	if rhsIsAggregate && be.LHS.Type() == promql.ValueTypeScalar && !rhsHasGrouping {
+	if rhsIsAggregate && be.LHS.Type() == parser.ValueTypeScalar && !rhsHasGrouping {
 		ss := Singlestat{
 			Datasource:         datasource,
 			Format:             format,
 			Height:             panelHeight,
 			Query:              escapeQuery(be.RHS.String()),
-			ThresholdInvertNo:  be.Op == promql.ItemLSS || be.Op == promql.ItemLTE,
-			ThresholdInvertYes: be.Op == promql.ItemGTR || be.Op == promql.ItemGTE,
+			ThresholdInvertNo:  be.Op == parser.LSS || be.Op == parser.LTE,
+			ThresholdInvertYes: be.Op == parser.GTR || be.Op == parser.GTE,
 			ThresholdValue:     be.LHS.String(),
 			Width:              panelWidth,
 		}
@@ -157,14 +157,14 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 	}
 	g.HasLegend = g.Legend != ""
 	gq := []GraphQuery{}
-	if be.LHS.Type() == promql.ValueTypeScalar {
-		if be.Op == promql.ItemLSS || be.Op == promql.ItemLTE {
+	if be.LHS.Type() == parser.ValueTypeScalar {
+		if be.Op == parser.LSS || be.Op == parser.LTE {
 			g.HasThreshold = true
 			g.ThresholdOP = "lt"
 			g.ThresholdValue = be.LHS.String()
 		}
 
-		if be.Op == promql.ItemGTR || be.Op == promql.ItemGTE {
+		if be.Op == parser.GTR || be.Op == parser.GTE {
 			g.HasThreshold = true
 			g.ThresholdOP = "gt"
 			g.ThresholdValue = be.LHS.String()
@@ -173,14 +173,14 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 		gq = append(gq, GraphQuery{Query: escapeQuery(be.LHS.String())})
 	}
 
-	if be.RHS.Type() == promql.ValueTypeScalar {
-		if be.Op == promql.ItemLSS || be.Op == promql.ItemLTE {
+	if be.RHS.Type() == parser.ValueTypeScalar {
+		if be.Op == parser.LSS || be.Op == parser.LTE {
 			g.HasThreshold = true
 			g.ThresholdOP = "lt"
 			g.ThresholdValue = be.RHS.String()
 		}
 
-		if be.Op == promql.ItemGTR || be.Op == promql.ItemGTE {
+		if be.Op == parser.GTR || be.Op == parser.GTE {
 			g.HasThreshold = true
 			g.ThresholdOP = "gt"
 			g.ThresholdValue = be.RHS.String()

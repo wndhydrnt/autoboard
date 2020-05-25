@@ -15,10 +15,10 @@ package tsdb
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"io"
 	"math"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"sort"
@@ -29,12 +29,13 @@ import (
 	"github.com/oklog/ulid"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/storage"
 	"github.com/prometheus/prometheus/tsdb/chunkenc"
 	"github.com/prometheus/prometheus/tsdb/chunks"
 	tsdb_errors "github.com/prometheus/prometheus/tsdb/errors"
 	"github.com/prometheus/prometheus/tsdb/fileutil"
 	"github.com/prometheus/prometheus/tsdb/index"
-	"github.com/prometheus/prometheus/tsdb/labels"
 	"github.com/prometheus/prometheus/tsdb/tombstones"
 )
 
@@ -412,8 +413,7 @@ func (c *LeveledCompactor) Compact(dest string, dirs []string, open []*Block) (u
 		uids = append(uids, meta.ULID.String())
 	}
 
-	entropy := rand.New(rand.NewSource(time.Now().UnixNano()))
-	uid = ulid.MustNew(ulid.Now(), entropy)
+	uid = ulid.MustNew(ulid.Now(), rand.Reader)
 
 	meta := compactBlockMetas(uid, metas...)
 	err = c.write(dest, meta, blocks...)
@@ -467,8 +467,7 @@ func (c *LeveledCompactor) Compact(dest string, dirs []string, open []*Block) (u
 func (c *LeveledCompactor) Write(dest string, b BlockReader, mint, maxt int64, parent *BlockMeta) (ulid.ULID, error) {
 	start := time.Now()
 
-	entropy := rand.New(rand.NewSource(time.Now().UnixNano()))
-	uid := ulid.MustNew(ulid.Now(), entropy)
+	uid := ulid.MustNew(ulid.Now(), rand.Reader)
 
 	meta := &BlockMeta{
 		ULID:    uid,
@@ -569,7 +568,7 @@ func (c *LeveledCompactor) write(dest string, meta *BlockMeta, blocks ...BlockRe
 		}
 	}
 
-	indexw, err := index.NewWriter(filepath.Join(tmp, indexFilename))
+	indexw, err := index.NewWriter(c.ctx, filepath.Join(tmp, indexFilename))
 	if err != nil {
 		return errors.Wrap(err, "open index writer")
 	}
@@ -649,8 +648,8 @@ func (c *LeveledCompactor) populateBlock(blocks []BlockReader, meta *BlockMeta, 
 	}
 
 	var (
-		set         ChunkSeriesSet
-		allSymbols  = make(map[string]struct{}, 1<<16)
+		set         storage.DeprecatedChunkSeriesSet
+		symbols     index.StringIter
 		closers     = []io.Closer{}
 		overlapping bool
 	)
@@ -675,7 +674,7 @@ func (c *LeveledCompactor) populateBlock(blocks []BlockReader, meta *BlockMeta, 
 			if i > 0 && b.Meta().MinTime < globalMaxt {
 				c.metrics.overlappingBlocks.Inc()
 				overlapping = true
-				level.Warn(c.logger).Log("msg", "found overlapping blocks during compaction", "ulid", meta.ULID)
+				level.Warn(c.logger).Log("msg", "Found overlapping blocks during compaction", "ulid", meta.ULID)
 			}
 			if b.Meta().MaxTime > globalMaxt {
 				globalMaxt = b.Meta().MaxTime
@@ -700,44 +699,39 @@ func (c *LeveledCompactor) populateBlock(blocks []BlockReader, meta *BlockMeta, 
 		}
 		closers = append(closers, tombsr)
 
-		symbols, err := indexr.Symbols()
-		if err != nil {
-			return errors.Wrap(err, "read symbols")
-		}
-		for s := range symbols {
-			allSymbols[s] = struct{}{}
-		}
-
-		all, err := indexr.Postings(index.AllPostingsKey())
+		k, v := index.AllPostingsKey()
+		all, err := indexr.Postings(k, v)
 		if err != nil {
 			return err
 		}
 		all = indexr.SortedPostings(all)
 
 		s := newCompactionSeriesSet(indexr, chunkr, tombsr, all)
+		syms := indexr.Symbols()
 
 		if i == 0 {
 			set = s
+			symbols = syms
 			continue
 		}
 		set, err = newCompactionMerger(set, s)
 		if err != nil {
 			return err
 		}
+		symbols = newMergedStringIter(symbols, syms)
 	}
 
-	// We fully rebuild the postings list index from merged series.
-	var (
-		postings = index.NewMemPostings()
-		values   = map[string]stringset{}
-		i        = uint64(0)
-	)
-
-	if err := indexw.AddSymbols(allSymbols); err != nil {
-		return errors.Wrap(err, "add symbols")
+	for symbols.Next() {
+		if err := indexw.AddSymbol(symbols.At()); err != nil {
+			return errors.Wrap(err, "add symbol")
+		}
+	}
+	if symbols.Err() != nil {
+		return errors.Wrap(symbols.Err(), "next symbol")
 	}
 
 	delIter := &deletedIterator{}
+	ref := uint64(0)
 	for set.Next() {
 		select {
 		case <-c.ctx.Done():
@@ -821,7 +815,7 @@ func (c *LeveledCompactor) populateBlock(blocks []BlockReader, meta *BlockMeta, 
 			return errors.Wrap(err, "write chunks")
 		}
 
-		if err := indexw.AddSeries(i, lset, mergedChks...); err != nil {
+		if err := indexw.AddSeries(ref, lset, mergedChks...); err != nil {
 			return errors.Wrap(err, "add series")
 		}
 
@@ -837,39 +831,12 @@ func (c *LeveledCompactor) populateBlock(blocks []BlockReader, meta *BlockMeta, 
 			}
 		}
 
-		for _, l := range lset {
-			valset, ok := values[l.Name]
-			if !ok {
-				valset = stringset{}
-				values[l.Name] = valset
-			}
-			valset.set(l.Value)
-		}
-		postings.Add(i, lset)
-
-		i++
+		ref++
 	}
 	if set.Err() != nil {
 		return errors.Wrap(set.Err(), "iterate compaction set")
 	}
 
-	s := make([]string, 0, 256)
-	for n, v := range values {
-		s = s[:0]
-
-		for x := range v {
-			s = append(s, x)
-		}
-		if err := indexw.WriteLabelIndex([]string{n}, s); err != nil {
-			return errors.Wrap(err, "write label index")
-		}
-	}
-
-	for _, l := range postings.SortedKeys() {
-		if err := indexw.WritePostings(l.Name, l.Value, postings.Get(l.Name, l.Value)); err != nil {
-			return errors.Wrap(err, "write postings")
-		}
-	}
 	return nil
 }
 
@@ -948,7 +915,7 @@ func (c *compactionSeriesSet) At() (labels.Labels, []chunks.Meta, tombstones.Int
 }
 
 type compactionMerger struct {
-	a, b ChunkSeriesSet
+	a, b storage.DeprecatedChunkSeriesSet
 
 	aok, bok  bool
 	l         labels.Labels
@@ -956,7 +923,8 @@ type compactionMerger struct {
 	intervals tombstones.Intervals
 }
 
-func newCompactionMerger(a, b ChunkSeriesSet) (*compactionMerger, error) {
+// TODO(bwplotka): Move to storage mergers.
+func newCompactionMerger(a, b storage.DeprecatedChunkSeriesSet) (*compactionMerger, error) {
 	c := &compactionMerger{
 		a: a,
 		b: b,
@@ -1032,4 +1000,48 @@ func (c *compactionMerger) Err() error {
 
 func (c *compactionMerger) At() (labels.Labels, []chunks.Meta, tombstones.Intervals) {
 	return c.l, c.c, c.intervals
+}
+
+func newMergedStringIter(a index.StringIter, b index.StringIter) index.StringIter {
+	return &mergedStringIter{a: a, b: b, aok: a.Next(), bok: b.Next()}
+}
+
+type mergedStringIter struct {
+	a        index.StringIter
+	b        index.StringIter
+	aok, bok bool
+	cur      string
+}
+
+func (m *mergedStringIter) Next() bool {
+	if (!m.aok && !m.bok) || (m.Err() != nil) {
+		return false
+	}
+
+	if !m.aok {
+		m.cur = m.b.At()
+		m.bok = m.b.Next()
+	} else if !m.bok {
+		m.cur = m.a.At()
+		m.aok = m.a.Next()
+	} else if m.b.At() > m.a.At() {
+		m.cur = m.a.At()
+		m.aok = m.a.Next()
+	} else if m.a.At() > m.b.At() {
+		m.cur = m.b.At()
+		m.bok = m.b.Next()
+	} else { // Equal.
+		m.cur = m.b.At()
+		m.aok = m.a.Next()
+		m.bok = m.b.Next()
+	}
+
+	return true
+}
+func (m mergedStringIter) At() string { return m.cur }
+func (m mergedStringIter) Err() error {
+	if m.a.Err() != nil {
+		return m.a.Err()
+	}
+	return m.b.Err()
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/prometheus/prometheus/promql"
+	"github.com/prometheus/prometheus/promql/parser"
 )
 
 // This code helps to understand what the promql query parser is doing.
@@ -17,13 +17,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	expr, err := promql.ParseExpr(flag.Arg(0))
+	expr, err := parser.ParseExpr(flag.Arg(0))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	be, ok := expr.(*promql.BinaryExpr)
+	be, ok := expr.(*parser.BinaryExpr)
 	if ok {
 		fmt.Println("Query Left Hand Side:")
 		fmt.Printf("  Type: %s\n", be.LHS.Type())
