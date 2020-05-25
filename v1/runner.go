@@ -8,7 +8,7 @@ import (
 	"github.com/wndhydrnt/autoboard/v1/config"
 )
 
-func Run(cfg config.Config, filters []*regexp.Regexp) error {
+func RunAlert(cfg config.Config, filters []*regexp.Regexp) error {
 	SetPrefix(cfg.SettingsPrefix)
 	log.SetLevel(cfg.LogLevel)
 	promapi, err := NewPrometheusAPI(cfg.PrometheusAddress)

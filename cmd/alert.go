@@ -26,7 +26,7 @@ var alertCmd = &cobra.Command{
 			filters = append(filters, r)
 		}
 
-		err := v1.Run(cfg, filters)
+		err := v1.RunAlert(cfg, filters)
 		if err != nil {
 			fmt.Fprintln(cmd.ErrOrStderr(), err)
 			os.Exit(1)
