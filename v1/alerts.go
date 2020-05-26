@@ -22,6 +22,7 @@ type Panel interface{}
 
 type Graph struct {
 	Datasource     string
+	Description    string
 	Format         string
 	HasLegend      bool
 	HasThreshold   bool
@@ -45,6 +46,7 @@ type GraphQuery struct {
 
 type Singlestat struct {
 	Datasource         string
+	Description        string
 	Format             string
 	Height             int
 	Query              string
@@ -74,7 +76,7 @@ type Renderer struct {
 func (r *Renderer) Render(db Dashboard) string {
 	graphs := []string{}
 	for gi, g := range db.Graphs {
-		g.PosX = int(24 * math.Abs(math.Remainder(float64(gi), graphPanelsPerRow)) / graphPanelsPerRow)
+		g.PosX = int(24 * (gi % graphPanelsPerRow) / graphPanelsPerRow)
 		g.PosY = int(math.Floor(float64(gi)/graphPanelsPerRow)) * panelHeight
 		graphs = append(graphs, r.graph.Render(g))
 	}
@@ -84,7 +86,7 @@ func (r *Renderer) Render(db Dashboard) string {
 	stats := []string{}
 	singlestatStartY := int(math.Ceil(float64(len(db.Graphs))/graphPanelsPerRow)) * panelHeight
 	for si, s := range db.SingleStats {
-		s.PosX = int(24 * math.Abs(math.Remainder(float64(si), singleStatPanelsPerRow)) / singleStatPanelsPerRow)
+		s.PosX = int(24 * (si % singleStatPanelsPerRow) / singleStatPanelsPerRow)
 		s.PosY = singlestatStartY + (int(math.Floor(float64(si)/singleStatPanelsPerRow)) * panelHeight)
 		stats = append(stats, r.singlestat.Render(s))
 	}
