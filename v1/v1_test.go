@@ -21,7 +21,7 @@ type grafanaGetDashboardResponse struct {
 }
 
 func TestAlert(t *testing.T) {
-	cfg, err := config.Parse("./test/config.yml")
+	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
 	err = RunAlert(cfg, []*regexp.Regexp{regexp.MustCompile(".*")})
 	require.NoError(t, err)
@@ -31,7 +31,7 @@ func TestAlert(t *testing.T) {
 	actual.Dashboard["uid"] = "abc"
 	actual.Dashboard["version"] = float64(1)
 
-	expectedData, err := ioutil.ReadFile("./test/result_alert.json")
+	expectedData, err := ioutil.ReadFile("../test/result_alert.json")
 	require.NoError(t, err)
 	var expected map[string]interface{}
 	err = json.Unmarshal(expectedData, &expected)
@@ -40,7 +40,7 @@ func TestAlert(t *testing.T) {
 }
 
 func TestDrilldown(t *testing.T) {
-	cfg, err := config.Parse("./test/config.yml")
+	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
 	dd := NewDrilldown()
 	err = dd.Run(cfg, "rate", "http://127.0.0.1:12958/metrics", "Drilldown Unit Test", "prometheus_tsdb_", "5m")
@@ -49,7 +49,7 @@ func TestDrilldown(t *testing.T) {
 	// Reset fields dynamically set by Grafana
 	actual.Dashboard["uid"] = "abc"
 	actual.Dashboard["version"] = float64(1)
-	expectedData, err := ioutil.ReadFile("./test/result_drilldown.json")
+	expectedData, err := ioutil.ReadFile("../test/result_drilldown.json")
 	require.NoError(t, err)
 	var expected map[string]interface{}
 	err = json.Unmarshal(expectedData, &expected)
