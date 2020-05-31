@@ -7,7 +7,7 @@
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations \u0026 Alerts",
+        "name": "Annotations & Alerts",
         "type": "dashboard"
       }
     ]
@@ -24,14 +24,18 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "test_datasource",
+      "description": "",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 12,
         "x": 0,
         "y": 0
       },
+      "hiddenSeries": false,
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
         "hideEmpty": true,
@@ -46,7 +50,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -61,7 +67,7 @@
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
-          "refId": ""
+          "refId": "A"
         }
       ],
       "thresholds": [
@@ -120,14 +126,18 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "test_datasource",
+      "description": "",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 12,
         "x": 12,
         "y": 0
       },
+      "hiddenSeries": false,
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
         "hideEmpty": true,
@@ -142,7 +152,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -157,7 +169,7 @@
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
-          "refId": ""
+          "refId": "A"
         }
       ],
       "thresholds": [
@@ -216,14 +228,18 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "test_datasource",
+      "description": "",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 12,
         "x": 0,
-        "y": 4
+        "y": 5
       },
+      "hiddenSeries": false,
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
         "hideEmpty": true,
@@ -238,7 +254,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -253,7 +271,7 @@
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
-          "refId": ""
+          "refId": "A"
         }
       ],
       "thresholds": [
@@ -312,14 +330,18 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "test_datasource",
+      "description": "",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 12,
         "x": 12,
-        "y": 4
+        "y": 5
       },
+      "hiddenSeries": false,
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
         "hideEmpty": true,
@@ -334,7 +356,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
@@ -349,7 +373,7 @@
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
-          "refId": ""
+          "refId": "A"
         }
       ],
       "thresholds": [
@@ -408,6 +432,7 @@
       "colorValue": true,
       "colors": ["#d44a3a", "rgba(237, 129, 40, 0.89)", "#299c46"],
       "datasource": "test_datasource",
+      "description": "",
       "format": "short",
       "gauge": {
         "maxValue": 100,
@@ -417,10 +442,10 @@
         "thresholdMarkers": true
       },
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 6,
         "x": 0,
-        "y": 8
+        "y": 10
       },
       "interval": null,
       "links": [],

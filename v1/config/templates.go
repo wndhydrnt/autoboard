@@ -20,13 +20,9 @@ var dashboardTplDefault = `
   "graphTooltip": 0,
   "links": [],
   "panels": [
-{{#Graph}}
 {{{Graph}}}
-{{/Graph}}
-{{#SingleStat}},{{/SingleStat}}
-{{#SingleStat}}
+{{#HasSinglestat}},{{/HasSinglestat}}
 {{{SingleStat}}}
-{{/SingleStat}}
   ],
   "style": "dark",
   "tags": [],
@@ -74,13 +70,16 @@ var graphTplDefault = `
   "dashLength": 10,
   "dashes": false,
   "datasource": "{{{Datasource}}}",
+  "description": "{{Description}}",
   "fill": 1,
+  "fillGradient": 0,
   "gridPos": {
     "h": {{{Height}}},
     "w": {{{Width}}},
     "x": {{PosX}},
     "y": {{PosY}}
   },
+  "hiddenSeries": false,
   "legend": {
     "avg": false,
     "current": false,
@@ -90,18 +89,24 @@ var graphTplDefault = `
     "min": false,
 {{#HasLegend}}
     "show": true,
+    "alignAsTable": true,
+    "total": true,
+    "values": true
 {{/HasLegend}}
 {{^HasLegend}}
     "show": false,
-{{/HasLegend}}
+    "alignAsTable": false,
     "total": false,
     "values": false
+{{/HasLegend}}
   },
   "lines": true,
   "linewidth": 1,
   "links": [],
   "nullPointMode": "null",
-  "options": {},
+  "options": {
+    "dataLinks": []
+  },
   "percentage": false,
   "pointradius": 2,
   "points": false,
@@ -117,7 +122,7 @@ var graphTplDefault = `
       "format": "time_series",
       "intervalFactor": 1,
       "legendFormat": "{{{Legend}}}",
-      "refId": "{{{RefID}}}"
+      "refId": "A"
     }{{#HasMore}},{{/HasMore}}
 {{/Queries}}
   ],
@@ -189,6 +194,7 @@ var singlestatTplDefault = `
 {{/ThresholdInvertNo}}
   ],
   "datasource": "{{{Datasource}}}",
+  "description": "{{Description}}",
   "format": "{{{Format}}}",
   "gauge": {
     "maxValue": 100,

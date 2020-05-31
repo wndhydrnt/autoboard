@@ -4,13 +4,16 @@
   "dashLength": 10,
   "dashes": false,
   "datasource": "{{{Datasource}}}",
+  "description": "{{Description}}",
   "fill": 1,
+  "fillGradient": 0,
   "gridPos": {
     "h": {{{Height}}},
     "w": {{{Width}}},
     "x": {{PosX}},
     "y": {{PosY}}
   },
+  "hiddenSeries": false,
   "legend": {
     "avg": false,
     "current": false,
@@ -20,18 +23,24 @@
     "min": false,
 {{#HasLegend}}
     "show": true,
+    "alignAsTable": true,
+    "total": true,
+    "values": true
 {{/HasLegend}}
 {{^HasLegend}}
     "show": false,
-{{/HasLegend}}
+    "alignAsTable": false,
     "total": false,
     "values": false
+{{/HasLegend}}
   },
   "lines": true,
   "linewidth": 1,
   "links": [],
   "nullPointMode": "null",
-  "options": {},
+  "options": {
+    "dataLinks": []
+  },
   "percentage": false,
   "pointradius": 2,
   "points": false,
@@ -47,7 +56,7 @@
       "format": "time_series",
       "intervalFactor": 1,
       "legendFormat": "{{{Legend}}}",
-      "refId": ""
+      "refId": "A"
     }{{#HasMore}},{{/HasMore}}
 {{/Queries}}
   ],

@@ -6,7 +6,7 @@ build:
 	go build -ldflags "-X 'github.com/wndhydrnt/autoboard/cmd.BuildDate=${BUILD_DATE}' -X 'github.com/wndhydrnt/autoboard/cmd.BuildHash=${GIT_COMMIT}' -X 'github.com/wndhydrnt/autoboard/cmd.Version=${VERSION}'"
 
 test:
-	go test ./...
+	go test -count=1 ./...
 
 test_bootstrap: test_bootstrap_services test_bootstrap_datasource
 

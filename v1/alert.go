@@ -2,98 +2,14 @@ package v1
 
 import (
 	"fmt"
-	"math"
+	"regexp"
 	"strings"
 
-	"github.com/hoisie/mustache"
 	pav1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/prometheus/promql/parser"
+	log "github.com/sirupsen/logrus"
+	"github.com/wndhydrnt/autoboard/v1/config"
 )
-
-type Dashboard struct {
-	Title       string
-	SingleStat  string
-	SingleStats []Singlestat
-	Graph       string
-	Graphs      []Graph
-}
-
-type Panel interface{}
-
-type Graph struct {
-	Datasource     string
-	Description    string
-	Format         string
-	HasLegend      bool
-	HasThreshold   bool
-	Height         int
-	Legend         string
-	Queries        []GraphQuery
-	PosX           int
-	PosY           int
-	ThresholdOP    string
-	ThresholdValue string
-	Title          string
-	Width          int
-}
-
-type GraphQuery struct {
-	Code    string
-	HasMore bool
-	Query   string
-	RefID   string
-}
-
-type Singlestat struct {
-	Datasource         string
-	Description        string
-	Format             string
-	Height             int
-	Query              string
-	PosX               int
-	PosY               int
-	ThresholdInvertNo  bool
-	ThresholdInvertYes bool
-	ThresholdValue     string
-	Title              string
-	Width              int
-}
-
-const (
-	defaultFormat          = "short"
-	graphPanelsPerRow      = 2
-	panelHeight            = 4
-	panelWidth             = 6
-	singleStatPanelsPerRow = 4
-)
-
-type Renderer struct {
-	dashboard  *mustache.Template
-	graph      *mustache.Template
-	singlestat *mustache.Template
-}
-
-func (r *Renderer) Render(db Dashboard) string {
-	graphs := []string{}
-	for gi, g := range db.Graphs {
-		g.PosX = int(24 * (gi % graphPanelsPerRow) / graphPanelsPerRow)
-		g.PosY = int(math.Floor(float64(gi)/graphPanelsPerRow)) * panelHeight
-		graphs = append(graphs, r.graph.Render(g))
-	}
-
-	db.Graph = strings.Join(graphs, ",")
-
-	stats := []string{}
-	singlestatStartY := int(math.Ceil(float64(len(db.Graphs))/graphPanelsPerRow)) * panelHeight
-	for si, s := range db.SingleStats {
-		s.PosX = int(24 * (si % singleStatPanelsPerRow) / singleStatPanelsPerRow)
-		s.PosY = singlestatStartY + (int(math.Floor(float64(si)/singleStatPanelsPerRow)) * panelHeight)
-		stats = append(stats, r.singlestat.Render(s))
-	}
-
-	db.SingleStat = strings.Join(stats, ",")
-	return r.dashboard.Render(db)
-}
 
 func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r interface{}, err error) {
 	expr, err := parser.ParseExpr(alert.Query)
@@ -201,4 +117,41 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 
 func escapeQuery(q string) string {
 	return strings.ReplaceAll(q, `"`, `\"`)
+}
+
+func RunAlert(cfg config.Config, filters []*regexp.Regexp) error {
+	SetPrefix(cfg.SettingsPrefix)
+	log.SetLevel(cfg.LogLevel)
+	promapi, err := NewPrometheusAPI(cfg.PrometheusAddress)
+	if err != nil {
+		return fmt.Errorf("init Prometheus API client: %w", err)
+	}
+
+	p := &Prometheus{
+		DatasourceDefault: cfg.DatasourceDefault,
+		Filters:           filters,
+		PromAPI:           promapi,
+	}
+	boards, err := p.ReadAlerts()
+	if err != nil {
+		return fmt.Errorf("read alerts from Prometheus: %w", err)
+	}
+
+	r := &Renderer{
+		dashboardTpl:  cfg.TemplateDashboard,
+		graphTpl:      cfg.TemplateGraph,
+		singlestatTpl: cfg.TemplateSinglestat,
+	}
+	gf := &Grafana{Address: cfg.GrafanaAddress}
+	for _, d := range boards {
+		s := r.Render(d)
+		err := gf.CreateDashboard(s)
+		if err != nil {
+			return fmt.Errorf("create board %s: %w", d.Title, err)
+		}
+
+		log.Infof("board %s created", d.Title)
+	}
+
+	return nil
 }

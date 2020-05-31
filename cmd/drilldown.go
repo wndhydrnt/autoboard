@@ -2,35 +2,36 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
+	v1 "github.com/wndhydrnt/autoboard/v1"
+)
+
+var (
+	drilldownPrefix            string
+	drilldownTimeRange         string
+	drilldownCounterChangeFunc string
 )
 
 // drilldownCmd represents the drilldown command
 var drilldownCmd = &cobra.Command{
-	Use:   "drilldown",
+	Args:  cobra.MinimumNArgs(2),
+	Use:   "drilldown NAME ENDPOINT",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("drilldown called")
+		d := v1.NewDrilldown()
+		err := d.Run(cfg, drilldownCounterChangeFunc, args[1], args[0], drilldownPrefix, drilldownTimeRange)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	},
 }
 
 func init() {
+	drilldownCmd.Flags().StringVar(&drilldownPrefix, "prefix", "", "")
+	drilldownCmd.Flags().StringVar(&drilldownTimeRange, "range", "5m", "")
+	drilldownCmd.Flags().StringVar(&drilldownCounterChangeFunc, "counter-change-func", "rate", "")
 	rootCmd.AddCommand(drilldownCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// drilldownCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// drilldownCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
