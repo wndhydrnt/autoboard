@@ -139,3 +139,74 @@ func (gi *GaugeInfoConverter) Do(m Metric, o Options) []Panel {
 
 	return panels
 }
+
+type HistogramConverter struct{}
+
+func (h *HistogramConverter) Can(m Metric) bool {
+	return m.Type == textparse.MetricTypeHistogram
+}
+
+func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
+	legend := ""
+	for _, lk := range m.LabelKeys {
+		if lk == "le" {
+			continue
+		}
+
+		legend = legend + " {{" + lk + "}}"
+	}
+
+	avg := Graph{}
+	avg.Datasource = o.Datasource
+	avg.Description = string(m.Help)
+	avg.Format = FindFormat(m.Name)
+	avg.HasLegend = true
+	avg.Height = panelHeight
+	avg.Legend = legend
+	avg.Title = fmt.Sprintf("%s avg", string(m.Name))
+	avg.Width = panelWidth * 2
+	avg.Queries = []GraphQuery{
+		{Query: fmt.Sprintf("%s_sum / %s_count", m.Name, m.Name)},
+	}
+
+	p50 := Graph{}
+	p50.Datasource = o.Datasource
+	p50.Description = string(m.Help)
+	p50.Format = FindFormat(m.Name)
+	p50.HasLegend = true
+	p50.Height = panelHeight
+	p50.Legend = legend
+	p50.Title = fmt.Sprintf("%s p50", string(m.Name))
+	p50.Width = panelWidth * 2
+	p50.Queries = []GraphQuery{
+		{Query: fmt.Sprintf("histogram_quantile(0.5, rate(%s_bucket[%s]))", m.Name, o.TimeRange)},
+	}
+
+	p90 := Graph{}
+	p90.Datasource = o.Datasource
+	p90.Description = string(m.Help)
+	p90.Format = FindFormat(m.Name)
+	p90.HasLegend = true
+	p90.Height = panelHeight
+	p90.Legend = legend
+	p90.Title = fmt.Sprintf("%s p90", string(m.Name))
+	p90.Width = panelWidth * 2
+	p90.Queries = []GraphQuery{
+		{Query: fmt.Sprintf("histogram_quantile(0.9, rate(%s_bucket[%s]))", m.Name, o.TimeRange)},
+	}
+
+	p99 := Graph{}
+	p99.Datasource = o.Datasource
+	p99.Description = string(m.Help)
+	p99.Format = FindFormat(m.Name)
+	p99.HasLegend = true
+	p99.Height = panelHeight
+	p99.Legend = legend
+	p99.Title = fmt.Sprintf("%s p99", string(m.Name))
+	p99.Width = panelWidth * 2
+	p99.Queries = []GraphQuery{
+		{Query: fmt.Sprintf("histogram_quantile(0.99, rate(%s_bucket[%s]))", m.Name, o.TimeRange)},
+	}
+
+	return []Panel{avg, p50, p90, p99}
+}

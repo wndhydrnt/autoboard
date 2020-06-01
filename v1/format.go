@@ -38,6 +38,10 @@ func (fm *FormatMapper) FindRange(metricName []byte) string {
 		return "Bps"
 	}
 
+	if bytes.HasSuffix(metricName, []byte("_requests_total")) {
+		return "reqps"
+	}
+
 	return "short"
 }
 

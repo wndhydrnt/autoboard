@@ -28,6 +28,7 @@ type Drilldown struct {
 func NewDrilldown() *Drilldown {
 	return &Drilldown{
 		Converters: []MetricConverter{
+			&HistogramConverter{},
 			&GaugeInfoConverter{},
 			&GaugeDerivConverter{},
 			&GaugeTimestampConverter{},
