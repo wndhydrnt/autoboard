@@ -64,6 +64,7 @@ func (gc *GaugeConverter) Do(m Metric, o Options) []Panel {
 	s.Height = panelHeight
 	s.Query = string(m.Name)
 	s.Title = string(m.Name)
+	s.ValueName = "current"
 	s.Width = panelWidth
 	return []Panel{s}
 }
@@ -109,6 +110,32 @@ func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
 	s.Height = panelHeight
 	s.Query = query
 	s.Title = string(m.Name)
+	s.ValueName = "current"
 	s.Width = panelWidth
 	return []Panel{s}
+}
+
+type GaugeInfoConverter struct{}
+
+func (gi *GaugeInfoConverter) Can(m Metric) bool {
+	return m.Type == textparse.MetricTypeGauge && bytes.HasSuffix(m.Name, []byte("_info"))
+}
+
+func (gi *GaugeInfoConverter) Do(m Metric, o Options) []Panel {
+	panels := []Panel{}
+	for _, lk := range m.LabelKeys {
+		s := Singlestat{}
+		s.Datasource = o.Datasource
+		s.Description = string(m.Help)
+		s.Format = defaultFormat
+		s.Height = panelHeight
+		s.Legend = fmt.Sprintf("{{%s}}", lk)
+		s.Query = string(m.Name)
+		s.Title = fmt.Sprintf("%s - %s", string(m.Name), lk)
+		s.ValueName = "name"
+		s.Width = panelWidth
+		panels = append(panels, s)
+	}
+
+	return panels
 }

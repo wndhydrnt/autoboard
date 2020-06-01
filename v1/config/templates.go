@@ -250,6 +250,7 @@ var singlestatTplDefault = `
       "format": "time_series",
       "instant": true,
       "intervalFactor": 1,
+      "legendFormat": "{{{Legend}}}",
       "refId": "A"
     }
   ],
@@ -266,6 +267,6 @@ var singlestatTplDefault = `
       "value": "null"
     }
   ],
-  "valueName": "current"
+  "valueName": "{{{ValueName}}}"
 }
 `

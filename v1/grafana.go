@@ -136,6 +136,7 @@ type Singlestat struct {
 	Description        string
 	Format             string
 	Height             int
+	Legend             string
 	Query              string
 	PosX               int
 	PosY               int
@@ -143,6 +144,7 @@ type Singlestat struct {
 	ThresholdInvertYes bool
 	ThresholdValue     string
 	Title              string
+	ValueName          string
 	Width              int
 }
 
