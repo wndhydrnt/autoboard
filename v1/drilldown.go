@@ -82,6 +82,7 @@ func (d *Drilldown) convertMetricsToPanels(metrics []Metric, options Options) ([
 	for _, m := range metrics {
 		c := findConverter(m, d.Converters)
 		if c == nil {
+			log.Debugf("no converter found for metric %s (%s)", string(m.Name), m.Type)
 			continue
 		}
 
