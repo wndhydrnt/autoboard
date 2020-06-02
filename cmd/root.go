@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/wndhydrnt/autoboard/v1/config"
+	"github.com/wndhydrnt/autoboard/pkg/config"
 )
 
 var cfgFile string

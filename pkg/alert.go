@@ -8,7 +8,7 @@ import (
 	pav1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/prometheus/promql/parser"
 	log "github.com/sirupsen/logrus"
-	"github.com/wndhydrnt/autoboard/v1/config"
+	"github.com/wndhydrnt/autoboard/pkg/config"
 )
 
 func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r interface{}, err error) {

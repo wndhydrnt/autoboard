@@ -11,7 +11,7 @@ import (
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/textparse"
 	log "github.com/sirupsen/logrus"
-	"github.com/wndhydrnt/autoboard/v1/config"
+	"github.com/wndhydrnt/autoboard/pkg/config"
 )
 
 type Metric struct {

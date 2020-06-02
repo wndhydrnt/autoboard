@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/wndhydrnt/autoboard/v1/config"
+	"github.com/wndhydrnt/autoboard/pkg/config"
 )
 
 type grafanaSearchResponse struct {

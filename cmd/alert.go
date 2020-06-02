@@ -6,7 +6,7 @@ import (
 	"regexp"
 
 	"github.com/spf13/cobra"
-	v1 "github.com/wndhydrnt/autoboard/v1"
+	v1 "github.com/wndhydrnt/autoboard/pkg"
 )
 
 // alertCmd represents the alert command
