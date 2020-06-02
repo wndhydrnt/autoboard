@@ -32,6 +32,7 @@ func NewDrilldown() *Drilldown {
 			&GaugeInfoConverter{},
 			&GaugeDerivConverter{},
 			&GaugeTimestampConverter{},
+			&GaugeWithLabelsConverter{},
 			&GaugeConverter{},
 			&CounterConverter{},
 		},
@@ -85,10 +86,6 @@ func (d *Drilldown) convertMetricsToPanels(metrics []Metric, options Options) ([
 		if c == nil {
 			log.Debugf("no converter found for metric %s (%s)", string(m.Name), m.Type)
 			continue
-		}
-
-		if string(m.Name) == "prometheus_rule_group_last_evaluation_timestamp_seconds" {
-			fmt.Printf("%#v\n", c)
 		}
 
 		panels := c.Do(m, options)

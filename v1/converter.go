@@ -238,3 +238,35 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 
 	return []Panel{avg, p50, p90, p99}
 }
+
+type GaugeWithLabelsConverter struct{}
+
+func (gl *GaugeWithLabelsConverter) Can(m Metric) bool {
+	return m.Type == textparse.MetricTypeGauge && len(m.LabelKeys) > 0
+}
+
+func (gl *GaugeWithLabelsConverter) Do(m Metric, o Options) []Panel {
+	legend := []string{}
+	for _, lk := range m.LabelKeys {
+		legend = append(legend, fmt.Sprintf("{{%s}}", lk))
+	}
+
+	query := string(m.Name)
+	if bytes.HasSuffix(m.Name, []byte("_timestamp_seconds")) {
+		query = query + " * 1000"
+	}
+
+	g := Graph{}
+	g.Datasource = o.Datasource
+	g.Description = string(m.Help)
+	g.Format = FindFormat(m.Name)
+	g.HasLegend = true
+	g.Height = panelHeight
+	g.Legend = strings.Join(legend, " ")
+	g.Title = string(m.Name)
+	g.Width = panelWidth * 2
+	g.Queries = []GraphQuery{
+		{Query: query},
+	}
+	return []Panel{g}
+}
