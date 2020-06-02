@@ -18,6 +18,10 @@ func (fm *FormatMapper) Find(metricName []byte) string {
 		return "s"
 	}
 
+	if bytes.HasSuffix(metricName, []byte("_range_seconds")) {
+		return "s"
+	}
+
 	if bytes.HasSuffix(metricName, []byte("_seconds")) {
 		return "dateTimeAsIso"
 	}
