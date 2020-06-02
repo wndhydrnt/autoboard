@@ -24,6 +24,7 @@ var dashboardTplDefault = `
 {{#HasSinglestat}},{{/HasSinglestat}}
 {{{SingleStat}}}
   ],
+  "refresh": "1m",
   "style": "dark",
   "tags": [],
   "templating": {

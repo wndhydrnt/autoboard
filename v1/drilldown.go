@@ -87,6 +87,10 @@ func (d *Drilldown) convertMetricsToPanels(metrics []Metric, options Options) ([
 			continue
 		}
 
+		if string(m.Name) == "prometheus_rule_group_last_evaluation_timestamp_seconds" {
+			fmt.Printf("%#v\n", c)
+		}
+
 		panels := c.Do(m, options)
 		for _, p := range panels {
 			switch p.Type() {

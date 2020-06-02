@@ -30,16 +30,23 @@ func (cc *CounterConverter) Can(m Metric) bool {
 }
 
 func (cc *CounterConverter) Do(m Metric, o Options) []Panel {
-	legend := []string{"{{instance}}"}
+	legend := []string{}
 	for _, l := range m.LabelKeys {
 		legend = append(legend, fmt.Sprintf("{{%s}}", l))
+	}
+
+	hasLegend := true
+	if len(legend) == 0 {
+		legend = append(legend, "{{instance}}")
+		hasLegend = false
+
 	}
 
 	g := Graph{}
 	g.Datasource = o.Datasource
 	g.Description = string(m.Help)
 	g.Format = FindRangeFormat(m.Name)
-	g.HasLegend = true
+	g.HasLegend = hasLegend
 	g.Height = panelHeight
 	g.Legend = strings.Join(legend, " ")
 	g.Title = fmt.Sprintf("%s %s over %s", string(m.Name), o.CounterChangeFunc, o.TimeRange)
@@ -76,13 +83,24 @@ func (gd *GaugeDerivConverter) Can(m Metric) bool {
 }
 
 func (gd *GaugeDerivConverter) Do(m Metric, o Options) []Panel {
+	legend := []string{}
+	for _, lk := range m.LabelKeys {
+		legend = append(legend, fmt.Sprintf("{{%s}}", lk))
+	}
+
+	hasLegend := true
+	if len(legend) == 0 {
+		legend = append(legend, "{{instance}}")
+		hasLegend = false
+	}
+
 	g := Graph{}
 	g.Datasource = o.Datasource
 	g.Description = string(m.Help)
 	g.Format = FindRangeFormat(m.Name)
-	g.HasLegend = true
+	g.HasLegend = hasLegend
 	g.Height = panelHeight
-	g.Legend = "{{instance}}"
+	g.Legend = strings.Join(legend, " ")
 	g.Title = fmt.Sprintf("%s %s over %s", string(m.Name), "deriv", o.TimeRange)
 	g.Width = panelWidth * 2
 	g.Queries = []GraphQuery{
@@ -94,7 +112,9 @@ func (gd *GaugeDerivConverter) Do(m Metric, o Options) []Panel {
 type GaugeTimestampConverter struct{}
 
 func (gt *GaugeTimestampConverter) Can(m Metric) bool {
-	return m.Type == textparse.MetricTypeGauge && (bytes.HasSuffix(m.Name, []byte("_timestamp_seconds")) || bytes.HasSuffix(m.Name, []byte("_timestamp")))
+	return m.Type == textparse.MetricTypeGauge &&
+		(bytes.HasSuffix(m.Name, []byte("_timestamp_seconds")) || bytes.HasSuffix(m.Name, []byte("_timestamp"))) &&
+		len(m.LabelKeys) == 0
 }
 
 func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
@@ -147,22 +167,30 @@ func (h *HistogramConverter) Can(m Metric) bool {
 }
 
 func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
-	legend := ""
+	legend := []string{}
 	for _, lk := range m.LabelKeys {
 		if lk == "le" {
 			continue
 		}
 
-		legend = legend + " {{" + lk + "}}"
+		legend = append(legend, fmt.Sprintf("{{%s}}", lk))
 	}
+
+	hasLegend := true
+	if len(legend) == 0 {
+		legend = append(legend, "{{instance}}")
+		hasLegend = false
+	}
+
+	legendFormatted := strings.Join(legend, " ")
 
 	avg := Graph{}
 	avg.Datasource = o.Datasource
 	avg.Description = string(m.Help)
 	avg.Format = FindFormat(m.Name)
-	avg.HasLegend = true
+	avg.HasLegend = hasLegend
 	avg.Height = panelHeight
-	avg.Legend = legend
+	avg.Legend = legendFormatted
 	avg.Title = fmt.Sprintf("%s avg", string(m.Name))
 	avg.Width = panelWidth * 2
 	avg.Queries = []GraphQuery{
@@ -173,9 +201,9 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	p50.Datasource = o.Datasource
 	p50.Description = string(m.Help)
 	p50.Format = FindFormat(m.Name)
-	p50.HasLegend = true
+	p50.HasLegend = hasLegend
 	p50.Height = panelHeight
-	p50.Legend = legend
+	p50.Legend = legendFormatted
 	p50.Title = fmt.Sprintf("%s p50", string(m.Name))
 	p50.Width = panelWidth * 2
 	p50.Queries = []GraphQuery{
@@ -186,9 +214,9 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	p90.Datasource = o.Datasource
 	p90.Description = string(m.Help)
 	p90.Format = FindFormat(m.Name)
-	p90.HasLegend = true
+	p90.HasLegend = hasLegend
 	p90.Height = panelHeight
-	p90.Legend = legend
+	p90.Legend = legendFormatted
 	p90.Title = fmt.Sprintf("%s p90", string(m.Name))
 	p90.Width = panelWidth * 2
 	p90.Queries = []GraphQuery{
@@ -199,9 +227,9 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	p99.Datasource = o.Datasource
 	p99.Description = string(m.Help)
 	p99.Format = FindFormat(m.Name)
-	p99.HasLegend = true
+	p99.HasLegend = hasLegend
 	p99.Height = panelHeight
-	p99.Legend = legend
+	p99.Legend = legendFormatted
 	p99.Title = fmt.Sprintf("%s p99", string(m.Name))
 	p99.Width = panelWidth * 2
 	p99.Queries = []GraphQuery{
