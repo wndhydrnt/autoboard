@@ -74,6 +74,7 @@ func (r *Renderer) Render(db Dashboard) string {
 		graphs = append(graphs, r.graphTpl.Render(g))
 	}
 
+	db.HasGraph = len(graphs) > 0
 	db.Graph = strings.Join(graphs, ",")
 
 	stats := []string{}
@@ -97,6 +98,7 @@ var (
 type Dashboard struct {
 	Graph         string
 	Graphs        []Graph
+	HasGraph      bool
 	HasSinglestat bool
 	SingleStat    string
 	SingleStats   []Singlestat

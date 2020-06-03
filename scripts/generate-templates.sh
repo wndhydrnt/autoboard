@@ -6,7 +6,7 @@ dashboard=$(cat templates/dashboard.json.mustache)
 graph=$(cat templates/graph.json.mustache)
 singlestat=$(cat templates/singlestat.json.mustache)
 
-cat << EOF > v1/config/templates.go
+cat << EOF > pkg/config/templates.go
 package config
 
 var dashboardTplDefault = \`

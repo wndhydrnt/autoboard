@@ -2,9 +2,9 @@
 
 set -e
 
-config=$(cat v1/config/config.yaml)
+config=$(cat pkg/config/config.yaml)
 
-cat << EOF > v1/config/default.go
+cat << EOF > pkg/config/default.go
 package config
 
 var defaultConfig = \`

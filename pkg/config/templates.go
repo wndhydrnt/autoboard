@@ -21,7 +21,7 @@ var dashboardTplDefault = `
   "links": [],
   "panels": [
 {{{Graph}}}
-{{#HasSinglestat}},{{/HasSinglestat}}
+{{#HasGraph}}{{#HasSinglestat}},{{/HasSinglestat}}{{/HasGraph}}
 {{{SingleStat}}}
   ],
   "refresh": "1m",

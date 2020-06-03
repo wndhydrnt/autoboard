@@ -1,0 +1,136 @@
+# HELP go_goroutines Number of goroutines that currently exist.
+# TYPE go_goroutines gauge
+go_goroutines 40
+# HELP go_info Information about the Go environment.
+# TYPE go_info gauge
+go_info{version="go1.13.4"} 1
+# HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.
+# TYPE go_memstats_alloc_bytes gauge
+go_memstats_alloc_bytes 2.2757656e+07
+# HELP prometheus_config_last_reload_success_timestamp_seconds Timestamp of the last successful configuration reload.
+# TYPE prometheus_config_last_reload_success_timestamp_seconds gauge
+prometheus_config_last_reload_success_timestamp_seconds 1.5912029469747257e+09
+# HELP prometheus_http_requests_total Counter of HTTP requests.
+# TYPE prometheus_http_requests_total counter
+prometheus_http_requests_total{code="200",handler="/api/v1/label/:name/values"} 11
+prometheus_http_requests_total{code="200",handler="/api/v1/query"} 468
+prometheus_http_requests_total{code="200",handler="/api/v1/query_range"} 2274
+prometheus_http_requests_total{code="200",handler="/api/v1/rules"} 2
+prometheus_http_requests_total{code="200",handler="/graph"} 1
+prometheus_http_requests_total{code="200",handler="/metrics"} 5031
+prometheus_http_requests_total{code="200",handler="/static/*filepath"} 24
+prometheus_http_requests_total{code="302",handler="/"} 1
+# HELP prometheus_http_request_duration_seconds Histogram of latencies for HTTP requests.
+# TYPE prometheus_http_request_duration_seconds histogram
+prometheus_http_request_duration_seconds_bucket{handler="/",le="0.1"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="0.2"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="0.4"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="1"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="3"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="8"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="20"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="60"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="120"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/",le="+Inf"} 1
+prometheus_http_request_duration_seconds_sum{handler="/"} 0.0031026
+prometheus_http_request_duration_seconds_count{handler="/"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="0.1"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="0.2"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="0.4"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="1"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="3"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="8"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="20"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="60"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="120"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/label/:name/values",le="+Inf"} 11
+prometheus_http_request_duration_seconds_sum{handler="/api/v1/label/:name/values"} 0.0144902
+prometheus_http_request_duration_seconds_count{handler="/api/v1/label/:name/values"} 11
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="0.1"} 457
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="0.2"} 467
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="0.4"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="1"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="3"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="8"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="20"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="60"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="120"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query",le="+Inf"} 468
+prometheus_http_request_duration_seconds_sum{handler="/api/v1/query"} 7.607839499999999
+prometheus_http_request_duration_seconds_count{handler="/api/v1/query"} 468
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="0.1"} 2011
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="0.2"} 2161
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="0.4"} 2246
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="1"} 2274
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="3"} 2274
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="8"} 2274
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="20"} 2274
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="60"} 2274
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="120"} 2274
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/query_range",le="+Inf"} 2274
+prometheus_http_request_duration_seconds_sum{handler="/api/v1/query_range"} 101.4600853000001
+prometheus_http_request_duration_seconds_count{handler="/api/v1/query_range"} 2274
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="0.1"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="0.2"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="0.4"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="1"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="3"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="8"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="20"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="60"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="120"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/api/v1/rules",le="+Inf"} 2
+prometheus_http_request_duration_seconds_sum{handler="/api/v1/rules"} 0.004213784999999999
+prometheus_http_request_duration_seconds_count{handler="/api/v1/rules"} 2
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="0.1"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="0.2"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="0.4"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="1"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="3"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="8"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="20"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="60"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="120"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/graph",le="+Inf"} 1
+prometheus_http_request_duration_seconds_sum{handler="/graph"} 0.0759587
+prometheus_http_request_duration_seconds_count{handler="/graph"} 1
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.1"} 5019
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.2"} 5023
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.4"} 5027
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="1"} 5030
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="3"} 5031
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="8"} 5031
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="20"} 5031
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="60"} 5031
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="120"} 5031
+prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="+Inf"} 5031
+prometheus_http_request_duration_seconds_sum{handler="/metrics"} 39.532367469999954
+prometheus_http_request_duration_seconds_count{handler="/metrics"} 5031
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="0.1"} 22
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="0.2"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="0.4"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="1"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="3"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="8"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="20"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="60"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="120"} 24
+prometheus_http_request_duration_seconds_bucket{handler="/static/*filepath",le="+Inf"} 24
+prometheus_http_request_duration_seconds_sum{handler="/static/*filepath"} 0.933619
+prometheus_http_request_duration_seconds_count{handler="/static/*filepath"} 24
+# HELP prometheus_rule_evaluation_duration_seconds The duration for a rule to execute.
+# TYPE prometheus_rule_evaluation_duration_seconds summary
+prometheus_rule_evaluation_duration_seconds{quantile="0.5"} 0.0008421
+prometheus_rule_evaluation_duration_seconds{quantile="0.9"} 0.0013029
+prometheus_rule_evaluation_duration_seconds{quantile="0.99"} 0.0019877
+prometheus_rule_evaluation_duration_seconds_sum 28.891820934999934
+prometheus_rule_evaluation_duration_seconds_count 24955
+# HELP prometheus_rule_group_last_duration_seconds The duration of the last rule group evaluation.
+# TYPE prometheus_rule_group_last_duration_seconds gauge
+prometheus_rule_group_last_duration_seconds{rule_group="/etc/prometheus/test_rules.yml;TestPanels"} 0.002286773
+# HELP prometheus_rule_group_last_evaluation_timestamp_seconds The timestamp of the last rule group evaluation in seconds.
+# TYPE prometheus_rule_group_last_evaluation_timestamp_seconds gauge
+prometheus_rule_group_last_evaluation_timestamp_seconds{rule_group="/etc/prometheus/test_rules.yml;TestPanels"} 1.5912040800320013e+09
+# HELP prometheus_tsdb_lowest_timestamp Lowest timestamp value stored in the database. The unit is decided by the library consumer.
+# TYPE prometheus_tsdb_lowest_timestamp gauge
+prometheus_tsdb_lowest_timestamp 1.590922964405e+12

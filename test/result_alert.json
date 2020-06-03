@@ -488,6 +488,7 @@
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -504,9 +505,10 @@
           "value": "null"
         }
       ],
-      "valueName": "current"
+      "valueName": ""
     }
   ],
+  "refresh": "1m",
   "style": "dark",
   "tags": [],
   "templating": {

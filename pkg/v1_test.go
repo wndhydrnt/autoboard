@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"regexp"
 	"testing"
@@ -27,32 +28,42 @@ func TestAlert(t *testing.T) {
 	require.NoError(t, err)
 
 	actual := readGrafanaDashboard("TestPanels", t)
-	// Reset fields dynamically set by Grafana
-	actual.Dashboard["uid"] = "abc"
-	actual.Dashboard["version"] = float64(1)
+	cleanVariableData(actual.Dashboard)
 
 	expectedData, err := ioutil.ReadFile("../test/result_alert.json")
 	require.NoError(t, err)
 	var expected map[string]interface{}
 	err = json.Unmarshal(expectedData, &expected)
+	cleanVariableData(expected)
 	require.NoError(t, err)
 	require.Equal(t, expected, actual.Dashboard)
 }
 
 func TestDrilldown(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		b, err := ioutil.ReadFile("../test/metrics.txt")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(b)
+	}))
+	defer s.Close()
 	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
 	dd := NewDrilldown()
-	err = dd.Run(cfg, "rate", "http://127.0.0.1:12958/metrics", "Drilldown Unit Test", "prometheus_tsdb_", "5m")
+	err = dd.Run(cfg, "rate", s.URL+"/metrics", "Drilldown Unit Test", "", "5m")
 	require.NoError(t, err)
 	actual := readGrafanaDashboard("Drilldown Unit Test", t)
-	// Reset fields dynamically set by Grafana
-	actual.Dashboard["uid"] = "abc"
-	actual.Dashboard["version"] = float64(1)
+	cleanVariableData(actual.Dashboard)
 	expectedData, err := ioutil.ReadFile("../test/result_drilldown.json")
 	require.NoError(t, err)
 	var expected map[string]interface{}
 	err = json.Unmarshal(expectedData, &expected)
+	cleanVariableData(expected)
 	require.NoError(t, err)
 	require.Equal(t, expected, actual.Dashboard)
 }
@@ -85,4 +96,21 @@ func readGrafanaDashboard(q string, t *testing.T) grafanaGetDashboardResponse {
 	require.NoError(t, err)
 
 	return result
+}
+
+// cleanVariableData removes or resets data that can be different between test runs.
+func cleanVariableData(d map[string]interface{}) {
+	d["schemaVersion"] = float64(1)
+	d["uid"] = "abc"
+	d["version"] = float64(1)
+
+	panels := d["panels"].([]interface{})
+	for _, panel := range panels {
+		ttt, ok := panel.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		delete(ttt, "id")
+	}
 }
