@@ -54,10 +54,10 @@ func (p *Prometheus) ReadAlerts() (boards []Dashboard, err error) {
 			switch v := metrics.(type) {
 			case Graph:
 				v.Title = settingString(ar, "title", ar.Name)
-				board.Graphs = append(board.Graphs, v)
+				board.Panels = append(board.Panels, v)
 			case Singlestat:
 				v.Title = settingString(ar, "title", ar.Name)
-				board.SingleStats = append(board.SingleStats, v)
+				board.Panels = append(board.Panels, v)
 			}
 		}
 

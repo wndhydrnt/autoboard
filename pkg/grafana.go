@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"strings"
 
@@ -67,26 +66,39 @@ type Renderer struct {
 }
 
 func (r *Renderer) Render(db Dashboard) string {
-	graphs := []string{}
-	for gi, g := range db.Graphs {
-		g.PosX = int(24 * (gi % graphPanelsPerRow) / graphPanelsPerRow)
-		g.PosY = int(math.Floor(float64(gi)/graphPanelsPerRow)) * panelHeight
-		graphs = append(graphs, r.graphTpl.Render(g))
+	panelsRendered := []string{}
+	graphWidth := int(24 / graphPanelsPerRow)
+	singlestatWidth := int(24 / singleStatPanelsPerRow)
+	posX := 0
+	posY := 0
+	for _, p := range db.Panels {
+		switch p.Type() {
+		case PanelTypeGraph:
+			graph := p.(Graph)
+			if (posX + graphWidth) > 24 {
+				posX = 0
+				posY = posY + panelHeight
+			}
+
+			graph.PosX = posX
+			graph.PosY = posY
+			panelsRendered = append(panelsRendered, r.graphTpl.Render(graph))
+			posX = posX + graphWidth
+		case PanelTypeSinglestat:
+			singlestat := p.(Singlestat)
+			if (posX + singlestatWidth) > 24 {
+				posX = 0
+				posY = posY + panelHeight
+			}
+
+			singlestat.PosX = posX
+			singlestat.PosY = posY
+			panelsRendered = append(panelsRendered, r.singlestatTpl.Render(singlestat))
+			posX = posX + singlestatWidth
+		}
 	}
 
-	db.HasGraph = len(graphs) > 0
-	db.Graph = strings.Join(graphs, ",")
-
-	stats := []string{}
-	singlestatStartY := int(math.Ceil(float64(len(db.Graphs))/graphPanelsPerRow)) * panelHeight
-	for si, s := range db.SingleStats {
-		s.PosX = int(24 * (si % singleStatPanelsPerRow) / singleStatPanelsPerRow)
-		s.PosY = singlestatStartY + (int(math.Floor(float64(si)/singleStatPanelsPerRow)) * panelHeight)
-		stats = append(stats, r.singlestatTpl.Render(s))
-	}
-
-	db.HasSinglestat = len(stats) > 0
-	db.SingleStat = strings.Join(stats, ",")
+	db.Panel = strings.Join(panelsRendered, ",")
 	return r.dashboardTpl.Render(db)
 }
 
@@ -96,13 +108,9 @@ var (
 )
 
 type Dashboard struct {
-	Graph         string
-	Graphs        []Graph
-	HasGraph      bool
-	HasSinglestat bool
-	SingleStat    string
-	SingleStats   []Singlestat
-	Title         string
+	Panel  string
+	Panels []Panel
+	Title  string
 }
 
 type Graph struct {

@@ -15,10 +15,10 @@ import (
 )
 
 type Metric struct {
-	Type      textparse.MetricType
 	Help      []byte
-	Name      []byte
 	LabelKeys []string
+	Name      []byte
+	Type      textparse.MetricType
 }
 
 type Drilldown struct {
@@ -61,15 +61,14 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint, title, p
 	db := Dashboard{
 		Title: title,
 	}
-	db.Graphs, db.SingleStats = d.convertMetricsToPanels(metrics, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
-	db.HasSinglestat = len(db.SingleStats) > 0
+	db.Panels = d.convertMetricsToPanels(metrics, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
 	r := &Renderer{
 		dashboardTpl:  cfg.TemplateDashboard,
 		graphTpl:      cfg.TemplateGraph,
 		singlestatTpl: cfg.TemplateSinglestat,
 	}
-	gf := &Grafana{Address: cfg.GrafanaAddress}
 	s := r.Render(db)
+	gf := &Grafana{Address: cfg.GrafanaAddress}
 	err = gf.CreateDashboard(s)
 	if err != nil {
 		return fmt.Errorf("create drilldown dashboard: %s", err)
@@ -78,9 +77,8 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint, title, p
 	return nil
 }
 
-func (d *Drilldown) convertMetricsToPanels(metrics []Metric, options Options) ([]Graph, []Singlestat) {
-	graphs := []Graph{}
-	singlestats := []Singlestat{}
+func (d *Drilldown) convertMetricsToPanels(metrics []Metric, options Options) []Panel {
+	panels := []Panel{}
 	for _, m := range metrics {
 		c := findConverter(m, d.Converters)
 		if c == nil {
@@ -88,20 +86,11 @@ func (d *Drilldown) convertMetricsToPanels(metrics []Metric, options Options) ([
 			continue
 		}
 
-		panels := c.Do(m, options)
-		for _, p := range panels {
-			switch p.Type() {
-			case PanelTypeGraph:
-				graphs = append(graphs, p.(Graph))
-				break
-			case PanelTypeSinglestat:
-				singlestats = append(singlestats, p.(Singlestat))
-				break
-			}
-		}
+		newPanels := c.Do(m, options)
+		panels = append(panels, newPanels...)
 	}
 
-	return graphs, singlestats
+	return panels
 }
 
 func parseMetrics(b []byte, contentType string, prefix string) []Metric {

@@ -20,9 +20,7 @@ var dashboardTplDefault = `
   "graphTooltip": 0,
   "links": [],
   "panels": [
-{{{Graph}}}
-{{#HasGraph}}{{#HasSinglestat}},{{/HasSinglestat}}{{/HasGraph}}
-{{{SingleStat}}}
+{{{Panel}}}
   ],
   "refresh": "1m",
   "style": "dark",

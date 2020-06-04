@@ -19,6 +19,170 @@
   "links": [],
   "panels": [
     {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [],
+      "datasource": "test_datasource",
+      "description": "Number of goroutines that currently exist.",
+      "format": "short",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "go_goroutines",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": ",",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "go_goroutines",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [],
+      "datasource": "test_datasource",
+      "description": "Information about the Go environment.",
+      "format": "short",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 2,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "go_info",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "{{version}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": ",",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "go_info - version",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "name"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -30,11 +194,11 @@
       "gridPos": {
         "h": 5,
         "w": 12,
-        "x": 0,
+        "x": 12,
         "y": 0
       },
       "hiddenSeries": false,
-      "id": 1,
+      "id": 3,
       "legend": {
         "alignAsTable": false,
         "avg": false,
@@ -113,6 +277,88 @@
       }
     },
     {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [],
+      "datasource": "test_datasource",
+      "description": "Timestamp of the last successful configuration reload.",
+      "format": "dateTimeAsIso",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 5
+      },
+      "id": 4,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "prometheus_config_last_reload_success_timestamp_seconds * 1000",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": ",",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "prometheus_config_last_reload_success_timestamp_seconds",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -124,11 +370,11 @@
       "gridPos": {
         "h": 5,
         "w": 12,
-        "x": 12,
-        "y": 0
+        "x": 6,
+        "y": 5
       },
       "hiddenSeries": false,
-      "id": 2,
+      "id": 5,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -219,10 +465,10 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 10
       },
       "hiddenSeries": false,
-      "id": 3,
+      "id": 6,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -313,10 +559,10 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 10
       },
       "hiddenSeries": false,
-      "id": 4,
+      "id": 7,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -407,10 +653,10 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 15
       },
       "hiddenSeries": false,
-      "id": 5,
+      "id": 8,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -501,10 +747,10 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 15
       },
       "hiddenSeries": false,
-      "id": 6,
+      "id": 9,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -595,10 +841,10 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 20
       },
       "hiddenSeries": false,
-      "id": 7,
+      "id": 10,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -689,10 +935,10 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 15
+        "y": 20
       },
       "hiddenSeries": false,
-      "id": 8,
+      "id": 11,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -776,252 +1022,6 @@
       "colorValue": true,
       "colors": [],
       "datasource": "test_datasource",
-      "description": "Number of goroutines that currently exist.",
-      "format": "short",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 0,
-        "y": 20
-      },
-      "id": 9,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
-      },
-      "tableColumn": "",
-      "targets": [
-        {
-          "expr": "go_goroutines",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": ",",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "go_goroutines",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [],
-      "datasource": "test_datasource",
-      "description": "Information about the Go environment.",
-      "format": "short",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 6,
-        "y": 20
-      },
-      "id": 10,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
-      },
-      "tableColumn": "",
-      "targets": [
-        {
-          "expr": "go_info",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "{{version}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": ",",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "go_info - version",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "name"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [],
-      "datasource": "test_datasource",
-      "description": "Timestamp of the last successful configuration reload.",
-      "format": "dateTimeAsIso",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 12,
-        "y": 20
-      },
-      "id": 11,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
-      },
-      "tableColumn": "",
-      "targets": [
-        {
-          "expr": "prometheus_config_last_reload_success_timestamp_seconds * 1000",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": ",",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "prometheus_config_last_reload_success_timestamp_seconds",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [],
-      "datasource": "test_datasource",
       "description": "Lowest timestamp value stored in the database. The unit is decided by the library consumer.",
       "format": "dateTimeAsIso",
       "gauge": {
@@ -1034,8 +1034,8 @@
       "gridPos": {
         "h": 5,
         "w": 6,
-        "x": 18,
-        "y": 20
+        "x": 0,
+        "y": 25
       },
       "id": 12,
       "interval": null,
@@ -1128,5 +1128,5 @@
   "timezone": "",
   "title": "Drilldown Unit Test",
   "uid": "IdQLqskMk",
-  "version": 24
+  "version": 44
 }
