@@ -1,11 +1,11 @@
 package v1
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/prometheus/prometheus/pkg/labels"
@@ -14,10 +14,15 @@ import (
 	"github.com/wndhydrnt/autoboard/pkg/config"
 )
 
+type Group struct {
+	Metrics []Metric
+	Name    string
+}
+
 type Metric struct {
-	Help      []byte
+	Help      string
 	LabelKeys []string
-	Name      []byte
+	Name      string
 	Type      textparse.MetricType
 }
 
@@ -61,13 +66,13 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint, title, p
 	db := Dashboard{
 		Title: title,
 	}
-	db.Panels = d.convertMetricsToPanels(metrics, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
+	panels := d.convertMetricsToPanels(metrics, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
 	r := &Renderer{
 		dashboardTpl:  cfg.TemplateDashboard,
 		graphTpl:      cfg.TemplateGraph,
 		singlestatTpl: cfg.TemplateSinglestat,
 	}
-	s := r.Render(db)
+	s := r.Render(db, panels)
 	gf := &Grafana{Address: cfg.GrafanaAddress}
 	err = gf.CreateDashboard(s)
 	if err != nil {
@@ -108,15 +113,19 @@ func parseMetrics(b []byte, contentType string, prefix string) []Metric {
 
 		switch et {
 		case textparse.EntryType:
-			cm.Name, cm.Type = p.Type()
+			n, t := p.Type()
+			cm.Name = string(n)
+			cm.Type = t
 			continue
 		case textparse.EntryHelp:
-			cm.Name, cm.Help = p.Help()
+			n, h := p.Help()
+			cm.Name = string(n)
+			cm.Help = string(h)
 			continue
 		default:
 		}
 
-		if cm.Name != nil {
+		if cm.Name != "" {
 			var lset labels.Labels
 			p.Metric(&lset)
 			for _, l := range lset {
@@ -132,9 +141,8 @@ func parseMetrics(b []byte, contentType string, prefix string) []Metric {
 	}
 
 	result := []Metric{}
-	prefixB := []byte(prefix)
 	for _, m := range metrics {
-		if bytes.HasPrefix(m.Name, prefixB) {
+		if strings.HasPrefix(m.Name, prefix) {
 			result = append(result, m)
 		}
 	}

@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 
@@ -79,7 +78,7 @@ func (gc *GaugeConverter) Do(m Metric, o Options) []Panel {
 type GaugeDerivConverter struct{}
 
 func (gd *GaugeDerivConverter) Can(m Metric) bool {
-	return m.Type == textparse.MetricTypeGauge && bytes.HasSuffix(m.Name, []byte("_bytes"))
+	return m.Type == textparse.MetricTypeGauge && strings.HasSuffix(m.Name, "_bytes")
 }
 
 func (gd *GaugeDerivConverter) Do(m Metric, o Options) []Panel {
@@ -113,13 +112,13 @@ type GaugeTimestampConverter struct{}
 
 func (gt *GaugeTimestampConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeGauge &&
-		(bytes.HasSuffix(m.Name, []byte("_timestamp_seconds")) || bytes.HasSuffix(m.Name, []byte("_timestamp"))) &&
+		(strings.HasSuffix(m.Name, "_timestamp_seconds") || strings.HasSuffix(m.Name, "_timestamp")) &&
 		len(m.LabelKeys) == 0
 }
 
 func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
 	query := string(m.Name)
-	if bytes.HasSuffix(m.Name, []byte("_timestamp_seconds")) {
+	if strings.HasSuffix(m.Name, "_timestamp_seconds") {
 		query = query + " * 1000"
 	}
 
@@ -138,7 +137,7 @@ func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
 type GaugeInfoConverter struct{}
 
 func (gi *GaugeInfoConverter) Can(m Metric) bool {
-	return m.Type == textparse.MetricTypeGauge && bytes.HasSuffix(m.Name, []byte("_info"))
+	return m.Type == textparse.MetricTypeGauge && strings.HasSuffix(m.Name, "_info")
 }
 
 func (gi *GaugeInfoConverter) Do(m Metric, o Options) []Panel {
@@ -252,7 +251,7 @@ func (gl *GaugeWithLabelsConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	query := string(m.Name)
-	if bytes.HasSuffix(m.Name, []byte("_timestamp_seconds")) {
+	if strings.HasSuffix(m.Name, "_timestamp_seconds") {
 		query = query + " * 1000"
 	}
 

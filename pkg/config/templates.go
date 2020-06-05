@@ -20,7 +20,7 @@ var dashboardTplDefault = `
   "graphTooltip": 0,
   "links": [],
   "panels": [
-{{{Panel}}}
+{{{Panels}}}
   ],
   "refresh": "1m",
   "style": "dark",

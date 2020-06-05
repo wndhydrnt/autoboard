@@ -1,52 +1,52 @@
 package v1
 
-import "bytes"
+import "strings"
 
 type FormatMapper struct {
 }
 
-func (fm *FormatMapper) Find(metricName []byte) string {
-	if bytes.HasSuffix(metricName, []byte("_bytes")) {
+func (fm *FormatMapper) Find(metricName string) string {
+	if strings.HasSuffix(metricName, "_bytes") {
 		return "decbytes"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_duration_seconds")) {
+	if strings.HasSuffix(metricName, "_duration_seconds") {
 		return "s"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_interval_seconds")) {
+	if strings.HasSuffix(metricName, "_interval_seconds") {
 		return "s"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_range_seconds")) {
+	if strings.HasSuffix(metricName, "_range_seconds") {
 		return "s"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_cleanup_seconds")) {
+	if strings.HasSuffix(metricName, "_cleanup_seconds") {
 		return "s"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_seconds")) {
+	if strings.HasSuffix(metricName, "_seconds") {
 		return "dateTimeAsIso"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_timestamp")) {
+	if strings.HasSuffix(metricName, "_timestamp") {
 		return "dateTimeAsIso"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_time")) {
+	if strings.HasSuffix(metricName, "_time") {
 		return "dateTimeAsIso"
 	}
 
 	return "short"
 }
 
-func (fm *FormatMapper) FindRange(metricName []byte) string {
-	if bytes.HasSuffix(metricName, []byte("_bytes_total")) || bytes.HasSuffix(metricName, []byte("_bytes")) {
+func (fm *FormatMapper) FindRange(metricName string) string {
+	if strings.HasSuffix(metricName, "_bytes_total") || strings.HasSuffix(metricName, "_bytes") {
 		return "Bps"
 	}
 
-	if bytes.HasSuffix(metricName, []byte("_requests_total")) {
+	if strings.HasSuffix(metricName, "_requests_total") {
 		return "reqps"
 	}
 
@@ -55,10 +55,10 @@ func (fm *FormatMapper) FindRange(metricName []byte) string {
 
 var DefaultFormatMapper = FormatMapper{}
 
-func FindFormat(metricName []byte) string {
+func FindFormat(metricName string) string {
 	return DefaultFormatMapper.Find(metricName)
 }
 
-func FindRangeFormat(metricName []byte) string {
+func FindRangeFormat(metricName string) string {
 	return DefaultFormatMapper.FindRange(metricName)
 }

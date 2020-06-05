@@ -65,13 +65,13 @@ type Renderer struct {
 	singlestatTpl *mustache.Template
 }
 
-func (r *Renderer) Render(db Dashboard) string {
+func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 	panelsRendered := []string{}
 	graphWidth := int(24 / graphPanelsPerRow)
 	singlestatWidth := int(24 / singleStatPanelsPerRow)
 	posX := 0
 	posY := 0
-	for _, p := range db.Panels {
+	for _, p := range panels {
 		switch p.Type() {
 		case PanelTypeGraph:
 			graph := p.(Graph)
@@ -98,7 +98,7 @@ func (r *Renderer) Render(db Dashboard) string {
 		}
 	}
 
-	db.Panel = strings.Join(panelsRendered, ",")
+	db.Panels = strings.Join(panelsRendered, ",")
 	return r.dashboardTpl.Render(db)
 }
 
@@ -108,8 +108,7 @@ var (
 )
 
 type Dashboard struct {
-	Panel  string
-	Panels []Panel
+	Panels string
 	Title  string
 }
 

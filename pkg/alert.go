@@ -132,7 +132,7 @@ func RunAlert(cfg config.Config, filters []*regexp.Regexp) error {
 		Filters:           filters,
 		PromAPI:           promapi,
 	}
-	boards, err := p.ReadAlerts()
+	alerts, err := p.ReadAlerts()
 	if err != nil {
 		return fmt.Errorf("read alerts from Prometheus: %w", err)
 	}
@@ -143,14 +143,14 @@ func RunAlert(cfg config.Config, filters []*regexp.Regexp) error {
 		singlestatTpl: cfg.TemplateSinglestat,
 	}
 	gf := &Grafana{Address: cfg.GrafanaAddress}
-	for _, d := range boards {
-		s := r.Render(d)
+	for _, a := range alerts {
+		s := r.Render(a.Dashboard, a.Panels)
 		err := gf.CreateDashboard(s)
 		if err != nil {
-			return fmt.Errorf("create board %s: %w", d.Title, err)
+			return fmt.Errorf("create board %s: %w", a.Dashboard.Title, err)
 		}
 
-		log.Infof("board %s created", d.Title)
+		log.Infof("board %s created", a.Dashboard.Title)
 	}
 
 	return nil

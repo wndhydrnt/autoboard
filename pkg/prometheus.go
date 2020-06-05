@@ -24,21 +24,27 @@ type Prometheus struct {
 	PromAPI           pav1.API
 }
 
-func (p *Prometheus) ReadAlerts() (boards []Dashboard, err error) {
+type Alert struct {
+	Dashboard Dashboard
+	Panels    []Panel
+}
+
+func (p *Prometheus) ReadAlerts() ([]Alert, error) {
 	result, err := p.PromAPI.Rules(context.Background())
 	if err != nil {
-		return boards, fmt.Errorf("read alerts from Prometheus server: %w", err)
+		return nil, fmt.Errorf("read alerts from Prometheus server: %w", err)
 	}
 
-	boards = []Dashboard{}
+	alerts := []Alert{}
 	for _, g := range result.Groups {
+		alert := Alert{}
 		log.Debugf("processing alert group '%s'", g.Name)
 		if !p.isAllowed(g.Name) {
 			log.Debugf("filtered alert group '%s'", g.Name)
 			continue
 		}
 
-		board := Dashboard{Title: g.Name}
+		alert.Dashboard = Dashboard{Title: g.Name}
 		for _, rule := range g.Rules {
 			ar, ok := rule.(pav1.AlertingRule)
 			if !ok {
@@ -48,23 +54,23 @@ func (p *Prometheus) ReadAlerts() (boards []Dashboard, err error) {
 			datasource := settingString(ar, "datasource", p.DatasourceDefault)
 			metrics, err := ConvertAlertToPanel(ar, datasource)
 			if err != nil {
-				return boards, fmt.Errorf("convert query to metrics: %w", err)
+				return nil, fmt.Errorf("convert query to metrics: %w", err)
 			}
 
 			switch v := metrics.(type) {
 			case Graph:
 				v.Title = settingString(ar, "title", ar.Name)
-				board.Panels = append(board.Panels, v)
+				alert.Panels = append(alert.Panels, v)
 			case Singlestat:
 				v.Title = settingString(ar, "title", ar.Name)
-				board.Panels = append(board.Panels, v)
+				alert.Panels = append(alert.Panels, v)
 			}
 		}
 
-		boards = append(boards, board)
+		alerts = append(alerts, alert)
 	}
 
-	return boards, nil
+	return alerts, nil
 }
 
 func (p *Prometheus) isAllowed(name string) bool {
