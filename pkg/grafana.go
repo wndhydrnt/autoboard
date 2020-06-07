@@ -62,6 +62,7 @@ func (g *Grafana) CreateDashboard(d string) error {
 type Renderer struct {
 	dashboardTpl  *mustache.Template
 	graphTpl      *mustache.Template
+	rowTpl        *mustache.Template
 	singlestatTpl *mustache.Template
 }
 
@@ -73,6 +74,18 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 	posY := 0
 	for _, p := range panels {
 		switch p.Type() {
+		case PanelTypeRow:
+			row := p.(Row)
+			row.PosX = 0
+			if posY != 0 {
+				posY = posY + panelHeight
+			}
+
+			row.PosY = posY
+			panelsRendered = append(panelsRendered, r.rowTpl.Render(row))
+			posX = 0
+			// A row always has a height of 1
+			posY = posY + 1
 		case PanelTypeGraph:
 			graph := p.(Graph)
 			if (posX + graphWidth) > 24 {
@@ -104,12 +117,24 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 
 var (
 	PanelTypeGraph      = "graph"
+	PanelTypeRow        = "row"
 	PanelTypeSinglestat = "singlestat"
 )
 
 type Dashboard struct {
 	Panels string
 	Title  string
+}
+
+type Row struct {
+	ID    int
+	PosX  int
+	PosY  int
+	Title string
+}
+
+func (r Row) Type() string {
+	return PanelTypeRow
 }
 
 type Graph struct {
@@ -119,6 +144,7 @@ type Graph struct {
 	HasLegend      bool
 	HasThreshold   bool
 	Height         int
+	ID             int
 	Legend         string
 	Queries        []GraphQuery
 	PosX           int
@@ -145,6 +171,7 @@ type Singlestat struct {
 	Description        string
 	Format             string
 	Height             int
+	ID                 int
 	Legend             string
 	Query              string
 	PosX               int

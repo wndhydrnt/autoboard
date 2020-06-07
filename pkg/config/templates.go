@@ -79,6 +79,7 @@ var graphTplDefault = `
     "y": {{PosY}}
   },
   "hiddenSeries": false,
+  "id": {{ID}},
   "legend": {
     "avg": false,
     "current": false,
@@ -179,6 +180,23 @@ var graphTplDefault = `
 }
 `
 
+var rowTplDefault = `
+{
+  "collapsed": false,
+  "datasource": null,
+  "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": {{{PosX}}},
+    "y": {{{PosY}}}
+  },
+  "id": {{ID}},
+  "panels": [],
+  "title": "{{{Title}}}",
+  "type": "row"
+}
+`
+
 var singlestatTplDefault = `
 {
   "cacheTimeout": null,
@@ -208,6 +226,7 @@ var singlestatTplDefault = `
     "x": {{PosX}},
     "y": {{PosY}}
   },
+  "id": {{ID}},
   "interval": null,
   "links": [],
   "mappingType": 1,

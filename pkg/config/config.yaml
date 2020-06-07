@@ -22,4 +22,5 @@ prometheus:
 templates:
   dashboard: ""
   graph: ""
+  row: ""
   singlestat: ""

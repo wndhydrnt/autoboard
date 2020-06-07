@@ -18,6 +18,7 @@ type Config struct {
 	SettingsPrefix     string
 	TemplateDashboard  *mustache.Template
 	TemplateGraph      *mustache.Template
+	TemplateRow        *mustache.Template
 	TemplateSinglestat *mustache.Template
 }
 
@@ -54,6 +55,11 @@ func Parse(path string) (cfg Config, _ error) {
 		return cfg, fmt.Errorf("read graph template: %w", err)
 	}
 
+	rowTpl, err := readTemplate("templates.row", rowTplDefault)
+	if err != nil {
+		return cfg, fmt.Errorf("read row template: %w", err)
+	}
+
 	singlestatTpl, err := readTemplate("templates.singlestat", singlestatTplDefault)
 	if err != nil {
 		return cfg, fmt.Errorf("read singlestat template: %w", err)
@@ -67,6 +73,7 @@ func Parse(path string) (cfg Config, _ error) {
 		SettingsPrefix:     viper.GetString("prometheus.settings_prefix"),
 		TemplateDashboard:  dashboardTpl,
 		TemplateGraph:      graphTpl,
+		TemplateRow:        rowTpl,
 		TemplateSinglestat: singlestatTpl,
 	}, nil
 }

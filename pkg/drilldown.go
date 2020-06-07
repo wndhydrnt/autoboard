@@ -14,6 +14,10 @@ import (
 	"github.com/wndhydrnt/autoboard/pkg/config"
 )
 
+const (
+	groupNameGeneral = "ab_general"
+)
+
 type Group struct {
 	Metrics []Metric
 	Name    string
@@ -25,6 +29,8 @@ type Metric struct {
 	Name      string
 	Type      textparse.MetricType
 }
+
+type Groups map[string][]Metric
 
 type Drilldown struct {
 	Converters []MetricConverter
@@ -44,7 +50,7 @@ func NewDrilldown() *Drilldown {
 	}
 }
 
-func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint, title, prefix, timeRange string) error {
+func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, groupLevel int, title, prefix, timeRange string) error {
 	log.SetLevel(cfg.LogLevel)
 
 	c := &http.Client{
@@ -63,15 +69,15 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint, title, p
 	}
 
 	metrics := parseMetrics(b, resp.Header.Get("Content-Type"), prefix)
-	db := Dashboard{
-		Title: title,
-	}
-	panels := d.convertMetricsToPanels(metrics, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
+	groups := groupMetrics(metrics, groupLevel)
+	panels := d.convertGroupsToPanels(groups, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
 	r := &Renderer{
 		dashboardTpl:  cfg.TemplateDashboard,
 		graphTpl:      cfg.TemplateGraph,
+		rowTpl:        cfg.TemplateRow,
 		singlestatTpl: cfg.TemplateSinglestat,
 	}
+	db := Dashboard{Title: title}
 	s := r.Render(db, panels)
 	gf := &Grafana{Address: cfg.GrafanaAddress}
 	err = gf.CreateDashboard(s)
@@ -82,17 +88,23 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint, title, p
 	return nil
 }
 
-func (d *Drilldown) convertMetricsToPanels(metrics []Metric, options Options) []Panel {
+func (d *Drilldown) convertGroupsToPanels(groups Groups, options Options) []Panel {
 	panels := []Panel{}
-	for _, m := range metrics {
-		c := findConverter(m, d.Converters)
-		if c == nil {
-			log.Debugf("no converter found for metric %s (%s)", string(m.Name), m.Type)
-			continue
+	for name, metrics := range groups {
+		if len(metrics) > 0 {
+			panels = append(panels, Row{Title: name})
 		}
 
-		newPanels := c.Do(m, options)
-		panels = append(panels, newPanels...)
+		for _, m := range metrics {
+			c := findConverter(m, d.Converters)
+			if c == nil {
+				log.Debugf("no converter found for metric %s (%s)", string(m.Name), m.Type)
+				continue
+			}
+
+			newPanels := c.Do(m, options)
+			panels = append(panels, newPanels...)
+		}
 	}
 
 	return panels
@@ -158,4 +170,27 @@ func findConverter(m Metric, converters []MetricConverter) MetricConverter {
 	}
 
 	return nil
+}
+
+func groupMetrics(metrics []Metric, level int) Groups {
+	groups := Groups{
+		groupNameGeneral: {},
+	}
+	for _, m := range metrics {
+		parts := strings.Split(m.Name, "_")
+		if len(parts) <= level || level == 0 {
+			groups[groupNameGeneral] = append(groups[groupNameGeneral], m)
+			continue
+		}
+
+		key := strings.Join(parts[:level], "_")
+		_, exists := groups[key]
+		if exists {
+			groups[key] = append(groups[key], m)
+		} else {
+			groups[key] = []Metric{m}
+		}
+	}
+
+	return groups
 }

@@ -4,6 +4,7 @@ set -e
 
 dashboard=$(cat templates/dashboard.json.mustache)
 graph=$(cat templates/graph.json.mustache)
+row=$(cat templates/row.json.mustache)
 singlestat=$(cat templates/singlestat.json.mustache)
 
 cat << EOF > pkg/config/templates.go
@@ -15,6 +16,10 @@ ${dashboard}
 
 var graphTplDefault = \`
 ${graph}
+\`
+
+var rowTplDefault = \`
+${row}
 \`
 
 var singlestatTplDefault = \`
