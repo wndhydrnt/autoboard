@@ -46,10 +46,8 @@ func (cc *CounterConverter) Do(m Metric, o Options) []Panel {
 	g.Description = string(m.Help)
 	g.Format = FindRangeFormat(m.Name)
 	g.HasLegend = hasLegend
-	g.Height = panelHeight
 	g.Legend = strings.Join(legend, " ")
 	g.Title = fmt.Sprintf("%s %s over %s", string(m.Name), o.CounterChangeFunc, o.TimeRange)
-	g.Width = panelWidth * 2
 	g.Queries = []GraphQuery{
 		{Query: fmt.Sprintf("%s(%s[%s])", o.CounterChangeFunc, m.Name, o.TimeRange)},
 	}
@@ -67,11 +65,9 @@ func (gc *GaugeConverter) Do(m Metric, o Options) []Panel {
 	s.Datasource = o.Datasource
 	s.Description = string(m.Help)
 	s.Format = FindFormat(m.Name)
-	s.Height = panelHeight
 	s.Query = string(m.Name)
 	s.Title = string(m.Name)
 	s.ValueName = "current"
-	s.Width = panelWidth
 	return []Panel{s}
 }
 
@@ -98,10 +94,8 @@ func (gd *GaugeDerivConverter) Do(m Metric, o Options) []Panel {
 	g.Description = string(m.Help)
 	g.Format = FindRangeFormat(m.Name)
 	g.HasLegend = hasLegend
-	g.Height = panelHeight
 	g.Legend = strings.Join(legend, " ")
 	g.Title = fmt.Sprintf("%s %s over %s", string(m.Name), "deriv", o.TimeRange)
-	g.Width = panelWidth * 2
 	g.Queries = []GraphQuery{
 		{Query: fmt.Sprintf("%s(%s[%s])", "deriv", m.Name, o.TimeRange)},
 	}
@@ -126,11 +120,9 @@ func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
 	s.Datasource = o.Datasource
 	s.Description = string(m.Help)
 	s.Format = FindFormat(m.Name)
-	s.Height = panelHeight
 	s.Query = query
 	s.Title = string(m.Name)
 	s.ValueName = "current"
-	s.Width = panelWidth
 	return []Panel{s}
 }
 
@@ -147,12 +139,10 @@ func (gi *GaugeInfoConverter) Do(m Metric, o Options) []Panel {
 		s.Datasource = o.Datasource
 		s.Description = string(m.Help)
 		s.Format = defaultFormat
-		s.Height = panelHeight
 		s.Legend = fmt.Sprintf("{{%s}}", lk)
 		s.Query = string(m.Name)
 		s.Title = fmt.Sprintf("%s - %s", string(m.Name), lk)
 		s.ValueName = "name"
-		s.Width = panelWidth
 		panels = append(panels, s)
 	}
 
@@ -188,10 +178,8 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	avg.Description = string(m.Help)
 	avg.Format = FindFormat(m.Name)
 	avg.HasLegend = hasLegend
-	avg.Height = panelHeight
 	avg.Legend = legendFormatted
 	avg.Title = fmt.Sprintf("%s avg", string(m.Name))
-	avg.Width = panelWidth * 2
 	avg.Queries = []GraphQuery{
 		{Query: fmt.Sprintf("%s_sum / %s_count", m.Name, m.Name)},
 	}
@@ -201,10 +189,8 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	p50.Description = string(m.Help)
 	p50.Format = FindFormat(m.Name)
 	p50.HasLegend = hasLegend
-	p50.Height = panelHeight
 	p50.Legend = legendFormatted
 	p50.Title = fmt.Sprintf("%s p50", string(m.Name))
-	p50.Width = panelWidth * 2
 	p50.Queries = []GraphQuery{
 		{Query: fmt.Sprintf("histogram_quantile(0.5, rate(%s_bucket[%s]))", m.Name, o.TimeRange)},
 	}
@@ -214,10 +200,8 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	p90.Description = string(m.Help)
 	p90.Format = FindFormat(m.Name)
 	p90.HasLegend = hasLegend
-	p90.Height = panelHeight
 	p90.Legend = legendFormatted
 	p90.Title = fmt.Sprintf("%s p90", string(m.Name))
-	p90.Width = panelWidth * 2
 	p90.Queries = []GraphQuery{
 		{Query: fmt.Sprintf("histogram_quantile(0.9, rate(%s_bucket[%s]))", m.Name, o.TimeRange)},
 	}
@@ -227,10 +211,8 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	p99.Description = string(m.Help)
 	p99.Format = FindFormat(m.Name)
 	p99.HasLegend = hasLegend
-	p99.Height = panelHeight
 	p99.Legend = legendFormatted
 	p99.Title = fmt.Sprintf("%s p99", string(m.Name))
-	p99.Width = panelWidth * 2
 	p99.Queries = []GraphQuery{
 		{Query: fmt.Sprintf("histogram_quantile(0.99, rate(%s_bucket[%s]))", m.Name, o.TimeRange)},
 	}
@@ -260,10 +242,8 @@ func (gl *GaugeWithLabelsConverter) Do(m Metric, o Options) []Panel {
 	g.Description = string(m.Help)
 	g.Format = FindFormat(m.Name)
 	g.HasLegend = true
-	g.Height = panelHeight
 	g.Legend = strings.Join(legend, " ")
 	g.Title = string(m.Name)
-	g.Width = panelWidth * 2
 	g.Queries = []GraphQuery{
 		{Query: query},
 	}

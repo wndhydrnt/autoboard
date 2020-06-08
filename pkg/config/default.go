@@ -8,6 +8,12 @@ grafana:
   # Datasource to set in Grafana dashboards.
   # Env Var: AB_GRAFANA_DATASOURCE_DEFAULT=Prometheus
   datasource_default: ""
+  panels:
+    height: 5
+    graph:
+      width: 12
+    singlestat:
+      width: 6
 
 log:
   # Log level of the application.
@@ -25,5 +31,6 @@ prometheus:
 templates:
   dashboard: ""
   graph: ""
+  row: ""
   singlestat: ""
 `

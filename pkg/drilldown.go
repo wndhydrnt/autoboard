@@ -72,10 +72,13 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, g
 	groups := groupMetrics(metrics, groupLevel)
 	panels := d.convertGroupsToPanels(groups, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
 	r := &Renderer{
-		dashboardTpl:  cfg.TemplateDashboard,
-		graphTpl:      cfg.TemplateGraph,
-		rowTpl:        cfg.TemplateRow,
-		singlestatTpl: cfg.TemplateSinglestat,
+		dashboardTpl:         cfg.TemplateDashboard,
+		graphTpl:             cfg.TemplateGraph,
+		panelHeight:          cfg.GrafanaPanelsHeight,
+		panelWidthGraph:      cfg.GrafanaPanelsGraphWidth,
+		panelWidthSinglestat: cfg.GrafanaPanelsSinglestatWidth,
+		rowTpl:               cfg.TemplateRow,
+		singlestatTpl:        cfg.TemplateSinglestat,
 	}
 	db := Dashboard{Title: title}
 	s := r.Render(db, panels)

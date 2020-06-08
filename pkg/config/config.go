@@ -11,15 +11,18 @@ import (
 )
 
 type Config struct {
-	DatasourceDefault  string
-	GrafanaAddress     string
-	LogLevel           log.Level
-	PrometheusAddress  string
-	SettingsPrefix     string
-	TemplateDashboard  *mustache.Template
-	TemplateGraph      *mustache.Template
-	TemplateRow        *mustache.Template
-	TemplateSinglestat *mustache.Template
+	DatasourceDefault            string
+	GrafanaAddress               string
+	LogLevel                     log.Level
+	GrafanaPanelsHeight          int
+	GrafanaPanelsGraphWidth      int
+	GrafanaPanelsSinglestatWidth int
+	PrometheusAddress            string
+	SettingsPrefix               string
+	TemplateDashboard            *mustache.Template
+	TemplateGraph                *mustache.Template
+	TemplateRow                  *mustache.Template
+	TemplateSinglestat           *mustache.Template
 }
 
 func Parse(path string) (cfg Config, _ error) {
@@ -66,15 +69,18 @@ func Parse(path string) (cfg Config, _ error) {
 	}
 
 	return Config{
-		DatasourceDefault:  viper.GetString("grafana.datasource_default"),
-		GrafanaAddress:     viper.GetString("grafana.address"),
-		LogLevel:           logLvl,
-		PrometheusAddress:  viper.GetString("prometheus.address"),
-		SettingsPrefix:     viper.GetString("prometheus.settings_prefix"),
-		TemplateDashboard:  dashboardTpl,
-		TemplateGraph:      graphTpl,
-		TemplateRow:        rowTpl,
-		TemplateSinglestat: singlestatTpl,
+		DatasourceDefault:            viper.GetString("grafana.datasource_default"),
+		GrafanaAddress:               viper.GetString("grafana.address"),
+		GrafanaPanelsHeight:          viper.GetInt("grafana.panels.height"),
+		GrafanaPanelsGraphWidth:      viper.GetInt("grafana.panels.graph.width"),
+		GrafanaPanelsSinglestatWidth: viper.GetInt("grafana.panels.singlestat.width"),
+		LogLevel:                     logLvl,
+		PrometheusAddress:            viper.GetString("prometheus.address"),
+		SettingsPrefix:               viper.GetString("prometheus.settings_prefix"),
+		TemplateDashboard:            dashboardTpl,
+		TemplateGraph:                graphTpl,
+		TemplateRow:                  rowTpl,
+		TemplateSinglestat:           singlestatTpl,
 	}, nil
 }
 

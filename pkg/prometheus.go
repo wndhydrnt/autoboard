@@ -18,15 +18,15 @@ func SetPrefix(p string) {
 	settingPrefix = p
 }
 
+type Alert struct {
+	Dashboard Dashboard
+	Panels    []Panel
+}
+
 type Prometheus struct {
 	DatasourceDefault string
 	Filters           []*regexp.Regexp
 	PromAPI           pav1.API
-}
-
-type Alert struct {
-	Dashboard Dashboard
-	Panels    []Panel
 }
 
 func (p *Prometheus) ReadAlerts() ([]Alert, error) {

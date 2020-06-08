@@ -34,12 +34,10 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 		ss := Singlestat{
 			Datasource:         datasource,
 			Format:             format,
-			Height:             panelHeight,
 			Query:              escapeQuery(be.LHS.String()),
 			ThresholdInvertNo:  be.Op == parser.GTR || be.Op == parser.GTE,
 			ThresholdInvertYes: be.Op == parser.LSS || be.Op == parser.LTE,
 			ThresholdValue:     be.RHS.String(),
-			Width:              panelWidth,
 		}
 
 		return ss, nil
@@ -55,12 +53,10 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 		ss := Singlestat{
 			Datasource:         datasource,
 			Format:             format,
-			Height:             panelHeight,
 			Query:              escapeQuery(be.RHS.String()),
 			ThresholdInvertNo:  be.Op == parser.LSS || be.Op == parser.LTE,
 			ThresholdInvertYes: be.Op == parser.GTR || be.Op == parser.GTE,
 			ThresholdValue:     be.LHS.String(),
-			Width:              panelWidth,
 		}
 
 		return ss, nil
@@ -69,9 +65,7 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 	g := Graph{
 		Datasource: datasource,
 		Format:     format,
-		Height:     panelHeight,
 		Legend:     strings.ReplaceAll(strings.ReplaceAll(settingString(alert, "legend", ""), "[[", "{{"), "]]", "}}"),
-		Width:      panelWidth * 2,
 	}
 	g.HasLegend = g.Legend != ""
 	gq := []GraphQuery{}
@@ -138,9 +132,12 @@ func RunAlert(cfg config.Config, filters []*regexp.Regexp) error {
 	}
 
 	r := &Renderer{
-		dashboardTpl:  cfg.TemplateDashboard,
-		graphTpl:      cfg.TemplateGraph,
-		singlestatTpl: cfg.TemplateSinglestat,
+		dashboardTpl:         cfg.TemplateDashboard,
+		graphTpl:             cfg.TemplateGraph,
+		panelHeight:          cfg.GrafanaPanelsHeight,
+		panelWidthGraph:      cfg.GrafanaPanelsGraphWidth,
+		panelWidthSinglestat: cfg.GrafanaPanelsSinglestatWidth,
+		singlestatTpl:        cfg.TemplateSinglestat,
 	}
 	gf := &Grafana{Address: cfg.GrafanaAddress}
 	for _, a := range alerts {

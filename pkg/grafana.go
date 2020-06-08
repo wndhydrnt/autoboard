@@ -60,16 +60,17 @@ func (g *Grafana) CreateDashboard(d string) error {
 }
 
 type Renderer struct {
-	dashboardTpl  *mustache.Template
-	graphTpl      *mustache.Template
-	rowTpl        *mustache.Template
-	singlestatTpl *mustache.Template
+	dashboardTpl         *mustache.Template
+	graphTpl             *mustache.Template
+	panelHeight          int
+	panelWidthGraph      int
+	panelWidthSinglestat int
+	rowTpl               *mustache.Template
+	singlestatTpl        *mustache.Template
 }
 
 func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 	panelsRendered := []string{}
-	graphWidth := int(24 / graphPanelsPerRow)
-	singlestatWidth := int(24 / singleStatPanelsPerRow)
 	posX := 0
 	posY := 0
 	for _, p := range panels {
@@ -78,7 +79,7 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 			row := p.(Row)
 			row.PosX = 0
 			if posY != 0 {
-				posY = posY + panelHeight
+				posY = posY + r.panelHeight
 			}
 
 			row.PosY = posY
@@ -88,26 +89,30 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 			posY = posY + 1
 		case PanelTypeGraph:
 			graph := p.(Graph)
-			if (posX + graphWidth) > 24 {
+			if (posX + r.panelWidthGraph) > 24 {
 				posX = 0
-				posY = posY + panelHeight
+				posY = posY + r.panelHeight
 			}
 
+			graph.Height = r.panelHeight
 			graph.PosX = posX
 			graph.PosY = posY
+			graph.Width = r.panelWidthGraph
 			panelsRendered = append(panelsRendered, r.graphTpl.Render(graph))
-			posX = posX + graphWidth
+			posX = posX + r.panelWidthGraph
 		case PanelTypeSinglestat:
 			singlestat := p.(Singlestat)
-			if (posX + singlestatWidth) > 24 {
+			if (posX + r.panelWidthSinglestat) > 24 {
 				posX = 0
-				posY = posY + panelHeight
+				posY = posY + r.panelHeight
 			}
 
+			singlestat.Height = r.panelHeight
 			singlestat.PosX = posX
 			singlestat.PosY = posY
+			singlestat.Width = r.panelWidthSinglestat
 			panelsRendered = append(panelsRendered, r.singlestatTpl.Render(singlestat))
-			posX = posX + singlestatWidth
+			posX = posX + r.panelWidthSinglestat
 		}
 	}
 
@@ -189,9 +194,5 @@ func (s Singlestat) Type() string {
 }
 
 const (
-	defaultFormat          = "short"
-	graphPanelsPerRow      = 2
-	panelHeight            = 5
-	panelWidth             = 6
-	singleStatPanelsPerRow = 4
+	defaultFormat = "short"
 )
