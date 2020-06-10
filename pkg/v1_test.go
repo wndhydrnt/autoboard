@@ -55,7 +55,7 @@ func TestDrilldown(t *testing.T) {
 	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
 	dd := NewDrilldown()
-	err = dd.Run(cfg, "rate", s.URL+"/metrics", 1, "Drilldown Unit Test", "", "5m")
+	err = dd.Run(cfg, "rate", s.URL+"/metrics", 1, []string{"instance"}, "Drilldown Unit Test", "", "5m")
 	require.NoError(t, err)
 	actual := readGrafanaDashboard("Drilldown Unit Test", t)
 	cleanVariableData(actual.Dashboard)

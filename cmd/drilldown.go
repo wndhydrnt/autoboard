@@ -11,6 +11,7 @@ import (
 var (
 	drilldownCounterChangeFunc string
 	drilldownGroupLevel        int
+	drilldownSelectors         []string
 	drilldownPrefix            string
 	drilldownTimeRange         string
 )
@@ -22,7 +23,7 @@ var drilldownCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Run: func(cmd *cobra.Command, args []string) {
 		d := v1.NewDrilldown()
-		err := d.Run(cfg, drilldownCounterChangeFunc, args[1], drilldownGroupLevel, args[0], drilldownPrefix, drilldownTimeRange)
+		err := d.Run(cfg, drilldownCounterChangeFunc, args[1], drilldownGroupLevel, drilldownSelectors, args[0], drilldownPrefix, drilldownTimeRange)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -31,9 +32,10 @@ var drilldownCmd = &cobra.Command{
 }
 
 func init() {
-	drilldownCmd.Flags().StringVar(&drilldownPrefix, "prefix", "", "")
-	drilldownCmd.Flags().IntVar(&drilldownGroupLevel, "group-level", 0, "")
-	drilldownCmd.Flags().StringVar(&drilldownTimeRange, "range", "5m", "")
 	drilldownCmd.Flags().StringVar(&drilldownCounterChangeFunc, "counter-change-func", "rate", "")
+	drilldownCmd.Flags().IntVar(&drilldownGroupLevel, "group-level", 0, "")
+	drilldownCmd.Flags().StringVar(&drilldownPrefix, "prefix", "", "")
+	drilldownCmd.Flags().StringVar(&drilldownTimeRange, "range", "5m", "")
+	drilldownCmd.Flags().StringArrayVar(&drilldownSelectors, "selector", []string{"instance"}, "")
 	rootCmd.AddCommand(drilldownCmd)
 }

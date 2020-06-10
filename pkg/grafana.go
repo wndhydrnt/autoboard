@@ -127,8 +127,28 @@ var (
 )
 
 type Dashboard struct {
-	Panels string
-	Title  string
+	Panels    string
+	Title     string
+	Variables []Variable
+}
+
+type Variable struct {
+	Datasource string
+	HasMore    bool
+	Query      string
+	Name       string
+}
+
+func labelsToVariables(datasource string, labels []string, query string) []Variable {
+	variables := []Variable{}
+	for i, l := range labels {
+		v := Variable{Datasource: datasource, Name: l}
+		v.HasMore = i+1 < len(labels)
+		v.Query = fmt.Sprintf("label_values(%s, %s)", query, l)
+		variables = append(variables, v)
+	}
+
+	return variables
 }
 
 type Row struct {

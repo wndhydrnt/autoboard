@@ -26,7 +26,36 @@ var dashboardTplDefault = `
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+{{#Variables}}
+      {
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "",
+          "value": []
+        },
+        "datasource": "{{{Datasource}}}",
+        "definition": "{{{Query}}}",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "{{{Name}}}",
+        "options": [],
+        "query": "{{{Query}}}",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }{{#HasMore}},{{/HasMore}}
+{{/Variables}}
+    ]
   },
   "time": {
     "from": "now-1h",
@@ -79,7 +108,6 @@ var graphTplDefault = `
     "y": {{PosY}}
   },
   "hiddenSeries": false,
-  "id": {{ID}},
   "legend": {
     "avg": false,
     "current": false,
@@ -190,7 +218,6 @@ var rowTplDefault = `
     "x": {{{PosX}}},
     "y": {{{PosY}}}
   },
-  "id": {{ID}},
   "panels": [],
   "title": "{{{Title}}}",
   "type": "row"
@@ -226,7 +253,6 @@ var singlestatTplDefault = `
     "x": {{PosX}},
     "y": {{PosY}}
   },
-  "id": {{ID}},
   "interval": null,
   "links": [],
   "mappingType": 1,

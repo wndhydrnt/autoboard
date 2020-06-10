@@ -50,7 +50,7 @@ func NewDrilldown() *Drilldown {
 	}
 }
 
-func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, groupLevel int, title, prefix, timeRange string) error {
+func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, groupLevel int, labels []string, title, prefix, timeRange string) error {
 	log.SetLevel(cfg.LogLevel)
 
 	c := &http.Client{
@@ -70,7 +70,7 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, g
 
 	metrics := parseMetrics(b, resp.Header.Get("Content-Type"), prefix)
 	groups := groupMetrics(metrics, groupLevel)
-	panels := d.convertGroupsToPanels(groups, Options{counterChangeFunc, cfg.DatasourceDefault, timeRange})
+	panels := d.convertGroupsToPanels(groups, Options{counterChangeFunc, cfg.DatasourceDefault, labels, timeRange})
 	r := &Renderer{
 		dashboardTpl:         cfg.TemplateDashboard,
 		graphTpl:             cfg.TemplateGraph,
@@ -81,6 +81,7 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, g
 		singlestatTpl:        cfg.TemplateSinglestat,
 	}
 	db := Dashboard{Title: title}
+	db.Variables = labelsToVariables(cfg.DatasourceDefault, labels, queryFromPanels(panels))
 	s := r.Render(db, panels)
 	gf := &Grafana{Address: cfg.GrafanaAddress}
 	err = gf.CreateDashboard(s)
@@ -196,4 +197,19 @@ func groupMetrics(metrics []Metric, level int) Groups {
 	}
 
 	return groups
+}
+
+func queryFromPanels(panels []Panel) string {
+	for _, p := range panels {
+		switch p.Type() {
+		case PanelTypeGraph:
+			g := p.(Graph)
+			return g.Title
+		case PanelTypeSinglestat:
+			s := p.(Singlestat)
+			return s.Title
+		}
+	}
+
+	return ""
 }
