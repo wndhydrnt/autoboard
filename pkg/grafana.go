@@ -12,24 +12,27 @@ import (
 )
 
 const (
+	defaultFormat        = "short"
 	grafanaUpdateMessage = "Updated by autoboard"
 )
 
-type GrafanaCreateDashboardRequest struct {
+type grafanaCreateDashboardRequest struct {
 	Dashboard *json.RawMessage `json:"dashboard"`
 	FolderID  int              `json:"folderId"`
 	Message   string           `json:"message"`
 	Overwrite bool             `json:"overwrite"`
 }
 
+// Grafana encapsulates all interactions with the Grafana API.
 type Grafana struct {
 	Address         string
 	FolderIDDefault int
 }
 
+// CreateDashboard creates a new dashboard via the Grafana API.
 func (g *Grafana) CreateDashboard(d string) error {
 	dashboard := json.RawMessage([]byte(d))
-	request := &GrafanaCreateDashboardRequest{
+	request := &grafanaCreateDashboardRequest{
 		Dashboard: &dashboard,
 		FolderID:  g.FolderIDDefault,
 		Message:   grafanaUpdateMessage,
@@ -59,6 +62,7 @@ func (g *Grafana) CreateDashboard(d string) error {
 	return nil
 }
 
+// Renderer contains all logic to create dashboard.
 type Renderer struct {
 	dashboardTpl         *mustache.Template
 	graphTpl             *mustache.Template
@@ -69,6 +73,9 @@ type Renderer struct {
 	singlestatTpl        *mustache.Template
 }
 
+// Render takes templates, a Dashboard and a list of Panels and creates a JSON data model of dashboard as required by
+// Grafana.
+// Panels are placed on the dashboard in the order in which they are defined in the slice.
 func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 	panelsRendered := []string{}
 	posX := 0
@@ -126,12 +133,20 @@ var (
 	PanelTypeSinglestat = "singlestat"
 )
 
+// A Panel is a data container.
+type Panel interface {
+	// Type helps identifying the underlying type of a Panel.
+	Type() string
+}
+
+// Dashboard holds data used on the top level of the JSON model.
 type Dashboard struct {
 	Panels    string
 	Title     string
 	Variables []Variable
 }
 
+// Variable is rendered as a selector by Grafana.
 type Variable struct {
 	Datasource string
 	HasMore    bool
@@ -151,6 +166,8 @@ func labelsToVariables(datasource string, labels []string, query string) []Varia
 	return variables
 }
 
+// A Row is rendered as a row by Grafana.
+// Height and width are not configurable because a row in Grafana always has a height of "1" and a width of "24".
 type Row struct {
 	ID    int
 	PosX  int
@@ -158,10 +175,12 @@ type Row struct {
 	Title string
 }
 
+// Type implements Panel.
 func (r Row) Type() string {
 	return PanelTypeRow
 }
 
+// A Graph is rendered as a graph panel by Grafana.
 type Graph struct {
 	Datasource     string
 	Description    string
@@ -180,10 +199,12 @@ type Graph struct {
 	Width          int
 }
 
+// Type implements Panel.
 func (g Graph) Type() string {
 	return PanelTypeGraph
 }
 
+// A GraphQuery is rendered as one query in a graph.
 type GraphQuery struct {
 	Code    string
 	HasMore bool
@@ -191,6 +212,7 @@ type GraphQuery struct {
 	RefID   string
 }
 
+// A Singlestat is rendered as a singlestat panel by Grafana.
 type Singlestat struct {
 	Datasource         string
 	Description        string
@@ -209,10 +231,7 @@ type Singlestat struct {
 	Width              int
 }
 
+// Type implements Panel.
 func (s Singlestat) Type() string {
 	return PanelTypeSinglestat
 }
-
-const (
-	defaultFormat = "short"
-)

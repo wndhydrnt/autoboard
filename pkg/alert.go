@@ -11,6 +11,10 @@ import (
 	"github.com/wndhydrnt/autoboard/pkg/config"
 )
 
+// ConvertAlertToPanel takes a Prometheus Alerting Rule as input and converts it to a Panel.
+// A query that aggregates a value, e.g. by using sum() without any "by" clause, is converted to a Singlestat panel.
+// A query is converted to a Graph panel otherwise.
+// A threshold is set for Singlestat and Graph panels if one side of the query is a scalar value.
 func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r interface{}, err error) {
 	expr, err := parser.ParseExpr(alert.Query)
 	if err != nil {
@@ -113,6 +117,7 @@ func escapeQuery(q string) string {
 	return strings.ReplaceAll(q, `"`, `\"`)
 }
 
+// RunAlert is the entrypoint to create a dashboard from an alert.
 func RunAlert(cfg config.Config, filters []*regexp.Regexp) error {
 	SetPrefix(cfg.SettingsPrefix)
 	log.SetLevel(cfg.LogLevel)

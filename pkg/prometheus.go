@@ -14,21 +14,25 @@ var (
 	settingPrefix = "ab_"
 )
 
+// SetPrefix sets the prefix used to identify configuration settings from annotations of an alert.
 func SetPrefix(p string) {
 	settingPrefix = p
 }
 
+// Alert holds the panels and the dashboard of a alert group.
 type Alert struct {
 	Dashboard Dashboard
 	Panels    []Panel
 }
 
+// Prometheus encapsulates all interactions with the Prometheus API.
 type Prometheus struct {
 	DatasourceDefault string
 	Filters           []*regexp.Regexp
 	PromAPI           pav1.API
 }
 
+// ReadAlerts queries the Prometheus API for alert groups and turns them into Alerts.
 func (p *Prometheus) ReadAlerts() ([]Alert, error) {
 	result, err := p.PromAPI.Rules(context.Background())
 	if err != nil {
@@ -99,6 +103,7 @@ func settingString(r pav1.AlertingRule, key, def string) string {
 	return def
 }
 
+// NewPrometheusAPI returns a new API client of Prometheus.
 func NewPrometheusAPI(addr string) (pav1.API, error) {
 	c, err := promapi.NewClient(promapi.Config{Address: addr})
 	if err != nil {

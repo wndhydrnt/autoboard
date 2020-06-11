@@ -18,11 +18,7 @@ const (
 	groupNameGeneral = "ab_general"
 )
 
-type Group struct {
-	Metrics []Metric
-	Name    string
-}
-
+// A Metric holds data parsed from the metric endpoint of a service.
 type Metric struct {
 	Help      string
 	LabelKeys []string
@@ -30,12 +26,15 @@ type Metric struct {
 	Type      textparse.MetricType
 }
 
+// Groups are Metrics grouped by a common criteria.
 type Groups map[string][]Metric
 
+// Drilldown main entrypoint for creating a drilldown dashboard.
 type Drilldown struct {
 	Converters []MetricConverter
 }
 
+// NewDrilldown returns an instance of Drilldown and adds all MetricConverters.
 func NewDrilldown() *Drilldown {
 	return &Drilldown{
 		Converters: []MetricConverter{
@@ -50,6 +49,7 @@ func NewDrilldown() *Drilldown {
 	}
 }
 
+// Run contains all the steps necessary to turn a Prometheus endpoint into a dashboard.
 func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, groupLevel int, labels []string, title, prefix, timeRange string) error {
 	log.SetLevel(cfg.LogLevel)
 

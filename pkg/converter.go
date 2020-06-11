@@ -7,15 +7,15 @@ import (
 	"github.com/prometheus/prometheus/pkg/textparse"
 )
 
-type Panel interface {
-	Type() string
-}
-
+// A MetricConverter contains the logic to convert a Metric to a Panel.
 type MetricConverter interface {
+	// Can indicates that a MetricConverter can handle a Metric.
 	Can(metric Metric) bool
+	// Do contains the the code that turns a Metric into one or more Panels.
 	Do(metric Metric, options Options) []Panel
 }
 
+// Options are passed to the Do() method of each MetricConverter.
 type Options struct {
 	CounterChangeFunc string
 	Datasource        string
@@ -23,12 +23,16 @@ type Options struct {
 	TimeRange         string
 }
 
+// CounterConverter handles metrics of type Counter.
+// It constructs a query that applies a function, rate() or increase() to it.
 type CounterConverter struct{}
 
+// Can implements MetricConverter.
 func (cc *CounterConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeCounter
 }
 
+// Do implements MetricConverter.
 func (cc *CounterConverter) Do(m Metric, o Options) []Panel {
 	legend := []string{}
 	for _, l := range m.LabelKeys {
@@ -55,12 +59,16 @@ func (cc *CounterConverter) Do(m Metric, o Options) []Panel {
 	return []Panel{g}
 }
 
+// GaugeConverter handles metrics of type Gauge.
+// It returns one Singlestat Panel and because of that will only handle metrics without any labels.
 type GaugeConverter struct{}
 
+// Can implements MetricConverter.
 func (gc *GaugeConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeGauge && len(m.LabelKeys) == 0
 }
 
+// Do implements MetricConverter.
 func (gc *GaugeConverter) Do(m Metric, o Options) []Panel {
 	s := Singlestat{}
 	s.Datasource = o.Datasource
@@ -72,12 +80,17 @@ func (gc *GaugeConverter) Do(m Metric, o Options) []Panel {
 	return []Panel{s}
 }
 
+// GaugeDerivConverter handles Metrics of type Gauge that can be converted into Panels of type Graph.
+// The deriv() function is applied to the Metric.
+// A conversion is only done if the suffix of the Metric suggests that calculating per-second derivative is of interest.
 type GaugeDerivConverter struct{}
 
+// Can implements MetricConverter.
 func (gd *GaugeDerivConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeGauge && strings.HasSuffix(m.Name, "_bytes")
 }
 
+// Do implements MetricConverter.
 func (gd *GaugeDerivConverter) Do(m Metric, o Options) []Panel {
 	legend := []string{}
 	for _, lk := range m.LabelKeys {
@@ -103,14 +116,18 @@ func (gd *GaugeDerivConverter) Do(m Metric, o Options) []Panel {
 	return []Panel{g}
 }
 
+// GaugeTimestampConverter handles Metrics whose suffix suggests that their value is a unix timestamp.
+// It returns a Singlestat Panel and because of that will only handle metrics without any labels.
 type GaugeTimestampConverter struct{}
 
+// Can implements MetricConverter.
 func (gt *GaugeTimestampConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeGauge &&
 		(strings.HasSuffix(m.Name, "_timestamp_seconds") || strings.HasSuffix(m.Name, "_timestamp")) &&
 		len(m.LabelKeys) == 0
 }
 
+// Do implements MetricConverter.
 func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
 	query := m.Name + labelSelectors(o.Labels)
 	if strings.HasSuffix(m.Name, "_timestamp_seconds") {
@@ -127,12 +144,17 @@ func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
 	return []Panel{s}
 }
 
+// GaugeInfoConverter handles Metrics whose suffix suggests that information is stored in labels not in the value.
+// Examples of such metrics are "go_info" or "prometheus_build_info".
+// It returns one Singlestat Panel per label key.
 type GaugeInfoConverter struct{}
 
+// Can implements MetricConverter.
 func (gi *GaugeInfoConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeGauge && strings.HasSuffix(m.Name, "_info")
 }
 
+// Do implements MetricConverter.
 func (gi *GaugeInfoConverter) Do(m Metric, o Options) []Panel {
 	panels := []Panel{}
 	for _, lk := range m.LabelKeys {
@@ -150,12 +172,16 @@ func (gi *GaugeInfoConverter) Do(m Metric, o Options) []Panel {
 	return panels
 }
 
+// HistogramConverter handles metrics of type Histogram.
+// It returns four Panels of type Graph, one for avg, p50, p95 and p99.
 type HistogramConverter struct{}
 
+// Can implements MetricConverter.
 func (h *HistogramConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeHistogram
 }
 
+// Do implements MetricConverter.
 func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	legend := []string{}
 	for _, lk := range m.LabelKeys {
@@ -223,12 +249,16 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	return []Panel{avg, p50, p90, p99}
 }
 
+// GaugeWithLabelsConverter handles metrics of type Gauge that define labels.
+// It returns one Panel of type Graph.
 type GaugeWithLabelsConverter struct{}
 
+// Can implements MetricConverter.
 func (gl *GaugeWithLabelsConverter) Can(m Metric) bool {
 	return m.Type == textparse.MetricTypeGauge && len(m.LabelKeys) > 0
 }
 
+// Do implements MetricConverter.
 func (gl *GaugeWithLabelsConverter) Do(m Metric, o Options) []Panel {
 	legend := []string{}
 	for _, lk := range m.LabelKeys {
