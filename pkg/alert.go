@@ -15,7 +15,7 @@ import (
 // A query that aggregates a value, e.g. by using sum() without any "by" clause, is converted to a Singlestat panel.
 // A query is converted to a Graph panel otherwise.
 // A threshold is set for Singlestat and Graph panels if one side of the query is a scalar value.
-func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r interface{}, err error) {
+func ConvertAlertToPanel(alert pav1.AlertingRule, datasource string) (r interface{}, err error) {
 	expr, err := parser.ParseExpr(alert.Query)
 	if err != nil {
 		return r, fmt.Errorf("parse query expression: %w", err)
@@ -26,7 +26,6 @@ func ConvertAlertToPanel(alert pav1.AlertingRule, datasourceDef string) (r inter
 		return r, fmt.Errorf("query is not a binary expression")
 	}
 
-	datasource := settingString(alert, "datasource", datasourceDef)
 	format := settingString(alert, "format", defaultFormat)
 	lhsHasGrouping := false
 	lhsAggr, lhsIsAggregate := be.LHS.(*parser.AggregateExpr)
