@@ -24,7 +24,7 @@ type grafanaGetDashboardResponse struct {
 func TestAlert(t *testing.T) {
 	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
-	err = RunAlert(cfg, []*regexp.Regexp{regexp.MustCompile(".*")})
+	err = RunAlert(cfg, []*regexp.Regexp{regexp.MustCompile(".*")}, "http://localhost:12958", "ab_")
 	require.NoError(t, err)
 
 	actual := readGrafanaDashboard("TestPanels", t)

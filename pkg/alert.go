@@ -118,10 +118,10 @@ func escapeQuery(q string) string {
 }
 
 // RunAlert is the entrypoint to create a dashboard from an alert.
-func RunAlert(cfg config.Config, filters []*regexp.Regexp) error {
-	SetPrefix(cfg.SettingsPrefix)
+func RunAlert(cfg config.Config, filters []*regexp.Regexp, promAddr string, settingPrefix string) error {
+	SetPrefix(settingPrefix)
 	log.SetLevel(cfg.LogLevel)
-	promapi, err := NewPrometheusAPI(cfg.PrometheusAddress)
+	promapi, err := NewPrometheusAPI(promAddr)
 	if err != nil {
 		return fmt.Errorf("init Prometheus API client: %w", err)
 	}

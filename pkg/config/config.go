@@ -1,7 +1,6 @@
 package config
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 
@@ -17,8 +16,6 @@ type Config struct {
 	GrafanaPanelsHeight          int
 	GrafanaPanelsGraphWidth      int
 	GrafanaPanelsSinglestatWidth int
-	PrometheusAddress            string
-	SettingsPrefix               string
 	TemplateDashboard            *mustache.Template
 	TemplateGraph                *mustache.Template
 	TemplateRow                  *mustache.Template
@@ -30,14 +27,10 @@ func Parse(path string) (cfg Config, _ error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 	viper.SetConfigType("yaml")
-	err := viper.ReadConfig(bytes.NewBufferString(defaultConfig))
-	if err != nil {
-		return cfg, fmt.Errorf("parse default config: %w", err)
-	}
 
 	if path != "" {
 		viper.SetConfigFile(path)
-		err = viper.MergeInConfig()
+		err := viper.ReadInConfig()
 		if err != nil {
 			return cfg, fmt.Errorf("parse config: %w", err)
 		}
@@ -69,14 +62,12 @@ func Parse(path string) (cfg Config, _ error) {
 	}
 
 	return Config{
-		DatasourceDefault:            viper.GetString("grafana.datasource_default"),
+		DatasourceDefault:            viper.GetString("grafana.datasource"),
 		GrafanaAddress:               viper.GetString("grafana.address"),
 		GrafanaPanelsHeight:          viper.GetInt("grafana.panels.height"),
 		GrafanaPanelsGraphWidth:      viper.GetInt("grafana.panels.graph.width"),
 		GrafanaPanelsSinglestatWidth: viper.GetInt("grafana.panels.singlestat.width"),
 		LogLevel:                     logLvl,
-		PrometheusAddress:            viper.GetString("prometheus.address"),
-		SettingsPrefix:               viper.GetString("prometheus.settings_prefix"),
 		TemplateDashboard:            dashboardTpl,
 		TemplateGraph:                graphTpl,
 		TemplateRow:                  rowTpl,

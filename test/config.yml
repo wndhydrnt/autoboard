@@ -1,11 +1,7 @@
-filters: []
+grafana.address: http://admin:admin@localhost:12959
+grafana.datasource: test_datasource
+grafana.panels.height: 5
+grafana.panels.graph.width: 12
+grafana.panels.singlestat.width: 6
 
-grafana:
-  datasource_default: test_datasource
-  address: http://admin:admin@localhost:12959
-
-log:
-  level: debug
-
-prometheus:
-  address: http://localhost:12958
+log.level: debug
