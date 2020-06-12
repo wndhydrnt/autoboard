@@ -178,6 +178,7 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 			}
 
 			graph.Datasource = r.datasource
+			graph.HasDatasource = r.datasource != ""
 			graph.Height = r.panelHeight
 			graph.PosX = posX
 			graph.PosY = posY
@@ -192,6 +193,7 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 			}
 
 			singlestat.Datasource = r.datasource
+			singlestat.HasDatasource = r.datasource != ""
 			singlestat.Height = r.panelHeight
 			singlestat.PosX = posX
 			singlestat.PosY = posY
@@ -263,6 +265,7 @@ type Graph struct {
 	Datasource     string
 	Description    string
 	Format         string
+	HasDatasource  bool
 	HasLegend      bool
 	HasThreshold   bool
 	Height         int
@@ -295,6 +298,7 @@ type Singlestat struct {
 	Datasource         string
 	Description        string
 	Format             string
+	HasDatasource      bool
 	Height             int
 	ID                 int
 	Legend             string

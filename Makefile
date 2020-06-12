@@ -16,7 +16,7 @@ test_bootstrap_services:
 	sleep 10
 
 test_bootstrap_grafana:
-	curl -X"POST" -u"admin:admin" -H'Content-Type: application/json' http://localhost:12959/api/datasources --data '{"name":"test_datasource","type":"prometheus","access":"proxy","url":"http://prometheus:9090","basicAuth":false}'
+	curl -X"POST" -u"admin:admin" -H'Content-Type: application/json' http://localhost:12959/api/datasources --data '{"name":"test_datasource","type":"prometheus","access":"proxy","url":"http://prometheus:9090","basicAuth":false, "isDefault": true}'
 	curl -X"POST" -u"admin:admin" -H'Content-Type: application/json' http://localhost:12959/api/folders --data '{"title":"Test Folder"}'
 
 test_bootstrap_stop:

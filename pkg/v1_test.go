@@ -26,6 +26,7 @@ func TestAlert(t *testing.T) {
 	require.NoError(t, err)
 	cfg.GrafanaPassword = "admin"
 	cfg.GrafanaUsername = "admin"
+	cfg.Datasource = "test_datasource"
 	err = RunAlert(cfg, []*regexp.Regexp{regexp.MustCompile(".*")}, "http://localhost:12958", "ab_")
 	require.NoError(t, err)
 

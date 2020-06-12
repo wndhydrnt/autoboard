@@ -3,7 +3,8 @@
   "bars": false,
   "dashLength": 10,
   "dashes": false,
-  "datasource": "{{{Datasource}}}",
+  {{#HasDatasource}}"datasource": "{{{Datasource}}}",{{/HasDatasource}}
+  {{^HasDatasource}}"datasource": null,{{/HasDatasource}}
   "description": "{{Description}}",
   "fill": 1,
   "fillGradient": 0,

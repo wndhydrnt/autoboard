@@ -10,7 +10,8 @@
     "#299c46","rgba(237, 129, 40, 0.89)","#d44a3a"
 {{/ThresholdInvertNo}}
   ],
-  "datasource": "{{{Datasource}}}",
+  {{#HasDatasource}}"datasource": "{{{Datasource}}}",{{/HasDatasource}}
+  {{^HasDatasource}}"datasource": null,{{/HasDatasource}}
   "description": "{{Description}}",
   "format": "{{{Format}}}",
   "gauge": {

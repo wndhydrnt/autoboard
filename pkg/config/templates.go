@@ -97,7 +97,8 @@ var graphTplDefault = `
   "bars": false,
   "dashLength": 10,
   "dashes": false,
-  "datasource": "{{{Datasource}}}",
+  {{#HasDatasource}}"datasource": "{{{Datasource}}}",{{/HasDatasource}}
+  {{^HasDatasource}}"datasource": null,{{/HasDatasource}}
   "description": "{{Description}}",
   "fill": 1,
   "fillGradient": 0,
@@ -237,7 +238,8 @@ var singlestatTplDefault = `
     "#299c46","rgba(237, 129, 40, 0.89)","#d44a3a"
 {{/ThresholdInvertNo}}
   ],
-  "datasource": "{{{Datasource}}}",
+  {{#HasDatasource}}"datasource": "{{{Datasource}}}",{{/HasDatasource}}
+  {{^HasDatasource}}"datasource": null,{{/HasDatasource}}
   "description": "{{Description}}",
   "format": "{{{Format}}}",
   "gauge": {

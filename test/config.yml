@@ -1,5 +1,4 @@
 grafana.address: http://localhost:12959
-grafana.datasource: test_datasource
 grafana.panels.height: 5
 grafana.panels.graph.width: 12
 grafana.panels.singlestat.width: 6
