@@ -126,7 +126,7 @@ func RunAlert(cfg config.Config, filters []*regexp.Regexp, promAddr string, sett
 	}
 
 	p := &Prometheus{
-		DatasourceDefault: cfg.DatasourceDefault,
+		DatasourceDefault: cfg.Datasource,
 		Filters:           filters,
 		PromAPI:           promapi,
 	}

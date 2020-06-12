@@ -10,7 +10,7 @@ import (
 )
 
 type Config struct {
-	DatasourceDefault            string
+	Datasource                   string
 	GrafanaAddress               string
 	LogLevel                     log.Level
 	GrafanaPanelsHeight          int
@@ -62,7 +62,7 @@ func Parse(path string) (cfg Config, _ error) {
 	}
 
 	return Config{
-		DatasourceDefault:            viper.GetString("grafana.datasource"),
+		Datasource:                   viper.GetString("grafana.datasource"),
 		GrafanaAddress:               viper.GetString("grafana.address"),
 		GrafanaPanelsHeight:          viper.GetInt("grafana.panels.height"),
 		GrafanaPanelsGraphWidth:      viper.GetInt("grafana.panels.graph.width"),

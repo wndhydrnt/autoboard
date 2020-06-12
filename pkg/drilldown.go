@@ -70,7 +70,7 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, g
 
 	metrics := parseMetrics(b, resp.Header.Get("Content-Type"), prefix)
 	groups := groupMetrics(metrics, groupLevel)
-	panels := d.convertGroupsToPanels(groups, Options{counterChangeFunc, cfg.DatasourceDefault, labels, timeRange})
+	panels := d.convertGroupsToPanels(groups, Options{counterChangeFunc, cfg.Datasource, labels, timeRange})
 	r := &Renderer{
 		dashboardTpl:         cfg.TemplateDashboard,
 		graphTpl:             cfg.TemplateGraph,
@@ -81,7 +81,7 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, g
 		singlestatTpl:        cfg.TemplateSinglestat,
 	}
 	db := Dashboard{Title: title}
-	db.Variables = labelsToVariables(cfg.DatasourceDefault, labels, queryFromPanels(panels))
+	db.Variables = labelsToVariables(cfg.Datasource, labels, queryFromPanels(panels))
 	s := r.Render(db, panels)
 	gf := &Grafana{Address: cfg.GrafanaAddress}
 	err = gf.CreateDashboard(s)
