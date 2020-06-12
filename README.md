@@ -10,12 +10,20 @@ Turn Prometheus alerts into Grafana dashboards.
 - Set threshold on Graph panel based on the query of the alert.
 - Set threshold on Singlestat panel based on the query of the alert.
 
-## Usage
+## Commands
+
+### `alert`
+
+Create a dashboard from [alerting rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/)
+in Prometheus.
+
+### `drilldown`
+
+Create a dashboard for all metrics exposed by a service at its scrape endpoint.
 
 ## Roadmap
 
-- Update a dashboard only if it changes.
-- Improve detection of more complex queries.
+The [.plan file](./.plan.md) contains ideas for new features and completed tasks.
 
 ## Known Caveats
 
