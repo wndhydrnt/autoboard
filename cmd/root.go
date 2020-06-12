@@ -36,6 +36,8 @@ func init() {
 	addFlagInt(rootCmd, "grafana.panels.height", 5, "Height of a panel on a dashboard")
 	addFlagInt(rootCmd, "grafana.panels.graph.width", 12, "Width of a Graph panel on a dashboard")
 	addFlagInt(rootCmd, "grafana.panels.singlestat.width", 6, "Width of a Singlestat panel on a dashboard")
+	addFlagString(rootCmd, "grafana.password", "", "Password to authenticate at the Grafana API")
+	addFlagString(rootCmd, "grafana.username", "", "Username to authenticate at the Grafana API")
 	addFlagString(rootCmd, "log.level", "error", "Log level")
 	addFlagString(rootCmd, "templates.dashboard", "", "Path to the template used to render a dashboard")
 	addFlagString(rootCmd, "templates.graph", "", "Path to the template used to render a graph")

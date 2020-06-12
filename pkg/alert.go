@@ -143,7 +143,11 @@ func RunAlert(cfg config.Config, filters []*regexp.Regexp, promAddr string, sett
 		panelWidthSinglestat: cfg.GrafanaPanelsSinglestatWidth,
 		singlestatTpl:        cfg.TemplateSinglestat,
 	}
-	gf := &Grafana{Address: cfg.GrafanaAddress}
+	gf := &Grafana{
+		Address:  cfg.GrafanaAddress,
+		Password: cfg.GrafanaPassword,
+		Username: cfg.GrafanaUsername,
+	}
 	for _, a := range alerts {
 		s := r.Render(a.Dashboard, a.Panels)
 		err := gf.CreateDashboard(s, cfg.GrafanaFolder)

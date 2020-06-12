@@ -83,7 +83,11 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, g
 	db := Dashboard{Title: title}
 	db.Variables = labelsToVariables(cfg.Datasource, labels, queryFromPanels(panels))
 	s := r.Render(db, panels)
-	gf := &Grafana{Address: cfg.GrafanaAddress}
+	gf := &Grafana{
+		Address:  cfg.GrafanaAddress,
+		Password: cfg.GrafanaPassword,
+		Username: cfg.GrafanaUsername,
+	}
 	err = gf.CreateDashboard(s, cfg.GrafanaFolder)
 	if err != nil {
 		return fmt.Errorf("create drilldown dashboard: %s", err)

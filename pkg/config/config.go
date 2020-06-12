@@ -16,6 +16,8 @@ type Config struct {
 	GrafanaPanelsHeight          int
 	GrafanaPanelsGraphWidth      int
 	GrafanaPanelsSinglestatWidth int
+	GrafanaPassword              string
+	GrafanaUsername              string
 	LogLevel                     log.Level
 	TemplateDashboard            *mustache.Template
 	TemplateGraph                *mustache.Template
@@ -69,6 +71,8 @@ func Parse(path string) (cfg Config, _ error) {
 		GrafanaPanelsHeight:          viper.GetInt("grafana.panels.height"),
 		GrafanaPanelsGraphWidth:      viper.GetInt("grafana.panels.graph.width"),
 		GrafanaPanelsSinglestatWidth: viper.GetInt("grafana.panels.singlestat.width"),
+		GrafanaPassword:              viper.GetString("grafana.password"),
+		GrafanaUsername:              viper.GetString("grafana.username"),
 		LogLevel:                     logLvl,
 		TemplateDashboard:            dashboardTpl,
 		TemplateGraph:                graphTpl,

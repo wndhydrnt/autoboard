@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -34,7 +35,9 @@ type grafanaAPIReadFoldersResponse []grafanaAPIFolder
 
 // Grafana encapsulates all interactions with the Grafana API.
 type Grafana struct {
-	Address string
+	Address  string
+	Password string
+	Username string
 }
 
 // CreateDashboard creates a new dashboard via the Grafana API.
@@ -63,19 +66,9 @@ func (g *Grafana) CreateDashboard(d string, folder string) error {
 		return err
 	}
 
-	resp, err := http.Post(g.Address+"/api/dashboards/db", "application/json", bytes.NewBuffer(payload))
+	err = g.sendJSON("POST", "/api/dashboards/db", bytes.NewBuffer(payload), nil)
 	if err != nil {
 		return err
-	}
-
-	if resp.StatusCode != 200 {
-		b, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return fmt.Errorf("read error reading response body: %w", err)
-		}
-
-		defer resp.Body.Close()
-		return fmt.Errorf("grafana returned %d: %s", resp.StatusCode, b)
 	}
 
 	return nil
@@ -97,24 +90,51 @@ func (g *Grafana) findFolderByName(name string) (gaf grafanaAPIFolder, _ error) 
 }
 
 func (g *Grafana) readFolders() (grafanaAPIReadFoldersResponse, error) {
-	resp, err := http.Get(g.Address + "/api/folders?limit=10000")
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
 	data := grafanaAPIReadFoldersResponse{}
-	err = json.Unmarshal(b, &data)
+	err := g.sendJSON("GET", "/api/folders?limit=10000", nil, &data)
 	if err != nil {
 		return nil, err
 	}
 
 	return data, nil
+}
+
+func (g *Grafana) sendJSON(method string, url string, body io.Reader, data interface{}) error {
+	r, err := http.NewRequest(method, g.Address+url, body)
+	if err != nil {
+		return err
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	if g.Username != "" || g.Password != "" {
+		r.SetBasicAuth(g.Username, g.Password)
+	}
+
+	resp, err := http.DefaultClient.Do(r)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		return fmt.Errorf("grafana API returned status code %d", resp.StatusCode)
+	}
+
+	if data == nil {
+		return nil
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Renderer contains all logic to create dashboard.

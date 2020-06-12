@@ -24,6 +24,8 @@ type grafanaGetDashboardResponse struct {
 func TestAlert(t *testing.T) {
 	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
+	cfg.GrafanaPassword = "admin"
+	cfg.GrafanaUsername = "admin"
 	err = RunAlert(cfg, []*regexp.Regexp{regexp.MustCompile(".*")}, "http://localhost:12958", "ab_")
 	require.NoError(t, err)
 
@@ -55,6 +57,8 @@ func TestDrilldown(t *testing.T) {
 	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
 	cfg.GrafanaFolder = "Test Folder"
+	cfg.GrafanaPassword = "admin"
+	cfg.GrafanaUsername = "admin"
 	dd := NewDrilldown()
 	err = dd.Run(cfg, "rate", s.URL+"/metrics", 1, []string{"instance"}, "Drilldown Unit Test", "", "5m")
 	require.NoError(t, err)
