@@ -140,6 +140,7 @@ func (g *Grafana) sendJSON(method string, url string, body io.Reader, data inter
 // Renderer contains all logic to create dashboard.
 type Renderer struct {
 	dashboardTpl         *mustache.Template
+	datasource           string
 	graphTpl             *mustache.Template
 	panelHeight          int
 	panelWidthGraph      int
@@ -176,6 +177,7 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 				posY = posY + r.panelHeight
 			}
 
+			graph.Datasource = r.datasource
 			graph.Height = r.panelHeight
 			graph.PosX = posX
 			graph.PosY = posY
@@ -189,6 +191,7 @@ func (r *Renderer) Render(db Dashboard, panels []Panel) string {
 				posY = posY + r.panelHeight
 			}
 
+			singlestat.Datasource = r.datasource
 			singlestat.Height = r.panelHeight
 			singlestat.PosX = posX
 			singlestat.PosY = posY

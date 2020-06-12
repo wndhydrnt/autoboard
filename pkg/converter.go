@@ -18,7 +18,6 @@ type MetricConverter interface {
 // Options are passed to the Do() method of each MetricConverter.
 type Options struct {
 	CounterChangeFunc string
-	Datasource        string
 	Labels            []string
 	TimeRange         string
 }
@@ -47,7 +46,6 @@ func (cc *CounterConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	g := Graph{}
-	g.Datasource = o.Datasource
 	g.Description = string(m.Help)
 	g.Format = FindRangeFormat(m.Name)
 	g.HasLegend = hasLegend
@@ -71,7 +69,6 @@ func (gc *GaugeConverter) Can(m Metric) bool {
 // Do implements MetricConverter.
 func (gc *GaugeConverter) Do(m Metric, o Options) []Panel {
 	s := Singlestat{}
-	s.Datasource = o.Datasource
 	s.Description = string(m.Help)
 	s.Format = FindFormat(m.Name)
 	s.Query = m.Name + labelSelectors(o.Labels)
@@ -104,7 +101,6 @@ func (gd *GaugeDerivConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	g := Graph{}
-	g.Datasource = o.Datasource
 	g.Description = string(m.Help)
 	g.Format = FindRangeFormat(m.Name)
 	g.HasLegend = hasLegend
@@ -135,7 +131,6 @@ func (gt *GaugeTimestampConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	s := Singlestat{}
-	s.Datasource = o.Datasource
 	s.Description = string(m.Help)
 	s.Format = FindFormat(m.Name)
 	s.Query = query
@@ -159,7 +154,6 @@ func (gi *GaugeInfoConverter) Do(m Metric, o Options) []Panel {
 	panels := []Panel{}
 	for _, lk := range m.LabelKeys {
 		s := Singlestat{}
-		s.Datasource = o.Datasource
 		s.Description = string(m.Help)
 		s.Format = defaultFormat
 		s.Legend = fmt.Sprintf("{{%s}}", lk)
@@ -203,7 +197,6 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	selectors := labelSelectors(o.Labels)
 
 	avg := Graph{}
-	avg.Datasource = o.Datasource
 	avg.Description = string(m.Help)
 	avg.Format = FindFormat(m.Name)
 	avg.HasLegend = hasLegend
@@ -214,7 +207,6 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	p50 := Graph{}
-	p50.Datasource = o.Datasource
 	p50.Description = string(m.Help)
 	p50.Format = FindFormat(m.Name)
 	p50.HasLegend = hasLegend
@@ -225,7 +217,6 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	p90 := Graph{}
-	p90.Datasource = o.Datasource
 	p90.Description = string(m.Help)
 	p90.Format = FindFormat(m.Name)
 	p90.HasLegend = hasLegend
@@ -236,7 +227,6 @@ func (h *HistogramConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	p99 := Graph{}
-	p99.Datasource = o.Datasource
 	p99.Description = string(m.Help)
 	p99.Format = FindFormat(m.Name)
 	p99.HasLegend = hasLegend
@@ -271,7 +261,6 @@ func (gl *GaugeWithLabelsConverter) Do(m Metric, o Options) []Panel {
 	}
 
 	g := Graph{}
-	g.Datasource = o.Datasource
 	g.Description = string(m.Help)
 	g.Format = FindFormat(m.Name)
 	g.HasLegend = true

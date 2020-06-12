@@ -137,6 +137,7 @@ func RunAlert(cfg config.Config, filters []*regexp.Regexp, promAddr string, sett
 
 	r := &Renderer{
 		dashboardTpl:         cfg.TemplateDashboard,
+		datasource:           cfg.Datasource,
 		graphTpl:             cfg.TemplateGraph,
 		panelHeight:          cfg.GrafanaPanelsHeight,
 		panelWidthGraph:      cfg.GrafanaPanelsGraphWidth,
