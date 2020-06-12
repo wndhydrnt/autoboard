@@ -146,7 +146,7 @@ func RunAlert(cfg config.Config, filters []*regexp.Regexp, promAddr string, sett
 	gf := &Grafana{Address: cfg.GrafanaAddress}
 	for _, a := range alerts {
 		s := r.Render(a.Dashboard, a.Panels)
-		err := gf.CreateDashboard(s)
+		err := gf.CreateDashboard(s, cfg.GrafanaFolder)
 		if err != nil {
 			return fmt.Errorf("create board %s: %w", a.Dashboard.Title, err)
 		}

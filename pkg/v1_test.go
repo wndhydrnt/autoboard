@@ -54,6 +54,7 @@ func TestDrilldown(t *testing.T) {
 	defer s.Close()
 	cfg, err := config.Parse("../test/config.yml")
 	require.NoError(t, err)
+	cfg.GrafanaFolder = "Test Folder"
 	dd := NewDrilldown()
 	err = dd.Run(cfg, "rate", s.URL+"/metrics", 1, []string{"instance"}, "Drilldown Unit Test", "", "5m")
 	require.NoError(t, err)
@@ -100,6 +101,7 @@ func readGrafanaDashboard(q string, t *testing.T) grafanaGetDashboardResponse {
 
 // cleanVariableData removes or resets data that can be different between test runs.
 func cleanVariableData(d map[string]interface{}) {
+	d["id"] = float64(1)
 	d["schemaVersion"] = float64(1)
 	d["uid"] = "abc"
 	d["version"] = float64(1)

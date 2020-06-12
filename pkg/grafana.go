@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/hoisie/mustache"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -23,18 +24,36 @@ type grafanaCreateDashboardRequest struct {
 	Overwrite bool             `json:"overwrite"`
 }
 
+type grafanaAPIFolder struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+	UID   string `json:"uid"`
+}
+
+type grafanaAPIReadFoldersResponse []grafanaAPIFolder
+
 // Grafana encapsulates all interactions with the Grafana API.
 type Grafana struct {
-	Address         string
-	FolderIDDefault int
+	Address string
 }
 
 // CreateDashboard creates a new dashboard via the Grafana API.
-func (g *Grafana) CreateDashboard(d string) error {
+func (g *Grafana) CreateDashboard(d string, folder string) error {
+	folderID := 0
+	if folder != "" {
+		log.Debugf("finding folder by name %s", folder)
+		f, err := g.findFolderByName(folder)
+		if err != nil {
+			return fmt.Errorf("find folder: %s", err)
+		}
+
+		folderID = f.ID
+	}
+
 	dashboard := json.RawMessage([]byte(d))
 	request := &grafanaCreateDashboardRequest{
 		Dashboard: &dashboard,
-		FolderID:  g.FolderIDDefault,
+		FolderID:  folderID,
 		Message:   grafanaUpdateMessage,
 		Overwrite: true,
 	}
@@ -60,6 +79,42 @@ func (g *Grafana) CreateDashboard(d string) error {
 	}
 
 	return nil
+}
+
+func (g *Grafana) findFolderByName(name string) (gaf grafanaAPIFolder, _ error) {
+	folders, err := g.readFolders()
+	if err != nil {
+		return gaf, fmt.Errorf("reading folders from grafana: %s", err)
+	}
+
+	for _, f := range folders {
+		if f.Title == name {
+			return f, nil
+		}
+	}
+
+	return gaf, fmt.Errorf("folder %s not found", name)
+}
+
+func (g *Grafana) readFolders() (grafanaAPIReadFoldersResponse, error) {
+	resp, err := http.Get(g.Address + "/api/folders?limit=10000")
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data := grafanaAPIReadFoldersResponse{}
+	err = json.Unmarshal(b, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // Renderer contains all logic to create dashboard.

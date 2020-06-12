@@ -12,10 +12,11 @@ import (
 type Config struct {
 	Datasource                   string
 	GrafanaAddress               string
-	LogLevel                     log.Level
+	GrafanaFolder                string
 	GrafanaPanelsHeight          int
 	GrafanaPanelsGraphWidth      int
 	GrafanaPanelsSinglestatWidth int
+	LogLevel                     log.Level
 	TemplateDashboard            *mustache.Template
 	TemplateGraph                *mustache.Template
 	TemplateRow                  *mustache.Template
@@ -64,6 +65,7 @@ func Parse(path string) (cfg Config, _ error) {
 	return Config{
 		Datasource:                   viper.GetString("grafana.datasource"),
 		GrafanaAddress:               viper.GetString("grafana.address"),
+		GrafanaFolder:                viper.GetString("grafana.folder"),
 		GrafanaPanelsHeight:          viper.GetInt("grafana.panels.height"),
 		GrafanaPanelsGraphWidth:      viper.GetInt("grafana.panels.graph.width"),
 		GrafanaPanelsSinglestatWidth: viper.GetInt("grafana.panels.singlestat.width"),
