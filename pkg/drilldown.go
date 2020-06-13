@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -98,10 +99,22 @@ func (d *Drilldown) Run(cfg config.Config, counterChangeFunc, endpoint string, g
 }
 
 func (d *Drilldown) convertGroupsToPanels(groups Groups, options Options) []Panel {
+	groupKeys := []string{}
+	for k := range groups {
+		groupKeys = append(groupKeys, k)
+	}
+
+	sort.Strings(groupKeys)
 	panels := []Panel{}
-	for name, metrics := range groups {
+	for _, name := range groupKeys {
+		metrics := groups[name]
 		if len(metrics) > 0 {
-			panels = append(panels, Row{Title: name})
+			title := name
+			if name == groupNameGeneral {
+				title = "General"
+			}
+
+			panels = append(panels, Row{Title: title})
 		}
 
 		for _, m := range metrics {
