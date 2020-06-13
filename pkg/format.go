@@ -26,6 +26,10 @@ func (fm *FormatMapper) Find(metricName string) string {
 		return "s"
 	}
 
+	if strings.HasSuffix(metricName, "_in_seconds") {
+		return "s"
+	}
+
 	if strings.HasSuffix(metricName, "_seconds") {
 		return "dateTimeAsIso"
 	}
