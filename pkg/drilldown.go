@@ -201,6 +201,13 @@ func groupMetrics(metrics []Metric, level int) Groups {
 		}
 	}
 
+	for n, ms := range groups {
+		if len(ms) < 2 {
+			groups[groupNameGeneral] = append(groups[groupNameGeneral], ms...)
+			delete(groups, n)
+		}
+	}
+
 	return groups
 }
 
