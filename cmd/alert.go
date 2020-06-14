@@ -18,8 +18,8 @@ var (
 var alertCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Use:   "alert NAME [NAME...]",
-	Short: "Generate a dashboard from an Alert Group in Prometheus",
-	Long:  `Generate a dashboard from an Alert Group in Prometheus`,
+	Short: "Generate a dashboard from an alert group in Prometheus",
+	Long:  `Generate a dashboard from an alert group in Prometheus`,
 	Run: func(cmd *cobra.Command, args []string) {
 		filters := []*regexp.Regexp{}
 		for _, a := range args {
