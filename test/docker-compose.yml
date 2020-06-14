@@ -4,6 +4,7 @@ services:
     image: grafana/grafana:6.5.2
     ports:
       - 12959:3000
+
   prometheus:
     image: prom/prometheus:v2.14.0
     ports:
@@ -11,3 +12,14 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/test_rules.yml:/etc/prometheus/test_rules.yml
+
+  redis:
+    image: redis:6.0.5
+    ports:
+      - 6379:6379
+
+  redis-exporter:
+    command: -redis.addr="redis:6379"
+    image: oliver006/redis_exporter:v1.7.0
+    ports:
+      - 9121:9121

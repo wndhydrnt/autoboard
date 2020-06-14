@@ -12,7 +12,7 @@ test:
 test_bootstrap: test_bootstrap_services test_bootstrap_grafana
 
 test_bootstrap_services:
-	cd test && docker-compose up -d
+	cd test && docker-compose up -d grafana prometheus
 	sleep 10
 
 test_bootstrap_grafana:
