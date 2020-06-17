@@ -1,0 +1,13 @@
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          make test_bootstrap
+          make test
