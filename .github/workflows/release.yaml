@@ -15,9 +15,9 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.14.4"
-      - run: GOOS=darwin GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.darwin-amd64
-      - run: GOOS=linux GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.linux-amd64
-      - run: GOOS=windows GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.windows-amd64
+      - run: VERSION=${{ steps.vars.outputs.tag }} make build_darwin
+      - run: VERSION=${{ steps.vars.outputs.tag }} make build_linux
+      - run: VERSION=${{ steps.vars.outputs.tag }} make build_windows
       - name: create release
         id: create_release
         uses: actions/create-release@v1

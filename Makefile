@@ -5,6 +5,15 @@ BUILD_DATE ?= $(shell date)
 build:
 	go build -ldflags "-X 'github.com/wndhydrnt/autoboard/cmd.BuildDate=${BUILD_DATE}' -X 'github.com/wndhydrnt/autoboard/cmd.BuildHash=${GIT_COMMIT}' -X 'github.com/wndhydrnt/autoboard/cmd.Version=${VERSION}'"
 
+build_darwin:
+	GOOS=darwin GOARCH=amd64 go build -o autoboard-${VERSION}.darwin-amd64
+
+build_linux:
+	GOOS=linux GOARCH=amd64 go build -o autoboard-${VERSION}.linux-amd64
+
+build_windows:
+	GOOS=windows GOARCH=amd64 go build -o autoboard-${VERSION}.windows-amd64
+
 .PHONY: test
 test:
 	go test -count=1 ./...
@@ -21,11 +30,6 @@ test_bootstrap_grafana:
 
 test_bootstrap_stop:
 	cd test && docker-compose down
-
-generate: generate_config generate_templates
-
-generate_config:
-	scripts/generate-config.sh
 
 generate_templates:
 	scripts/generate-templates.sh
