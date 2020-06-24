@@ -3,11 +3,9 @@ on:
     tags:
       - "v*"
 
-name: Release
-
 jobs:
   build:
-    name: Release
+    name: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +18,7 @@ jobs:
       - run: GOOS=darwin GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.darwin-amd64
       - run: GOOS=linux GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.linux-amd64
       - run: GOOS=windows GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.windows-amd64
-      - name: Create Release
+      - name: create release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -30,7 +28,7 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload darwin-amd64
+      - name: upload darwin-amd64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,7 +37,7 @@ jobs:
           asset_path: ./autoboard-${{ steps.vars.outputs.tag }}.darwin-amd64
           asset_name: autoboard-${{ steps.vars.outputs.tag }}.darwin-amd64
           asset_content_type: application/octet-stream
-      - name: Upload linux-amd64
+      - name: upload linux-amd64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -48,7 +46,7 @@ jobs:
           asset_path: ./autoboard-${{ steps.vars.outputs.tag }}.linux-amd64
           asset_name: autoboard-${{ steps.vars.outputs.tag }}.linux-amd64
           asset_content_type: application/octet-stream
-      - name: Upload windows-amd64
+      - name: upload windows-amd64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
