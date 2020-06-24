@@ -1,0 +1,54 @@
+on:
+  push:
+    tags:
+      - "v*"
+
+name: Release
+
+jobs:
+  build:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.14.4"
+      - run: |
+          GOOS=darwin GOARCH=amd64 go build -o autoboard-${{ github.ref }}.darwin-amd64
+          GOOS=linux GOARCH=amd64 go build -o autoboard-${{ github.ref }}.linux-amd64
+          GOOS=windows GOARCH=amd64 go build -o autoboard-${{ github.ref }}.windows-amd64
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload darwin-amd64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./autoboard-${{ github.ref }}.darwin-amd64
+          asset_name: autoboard-${{ github.ref }}.darwin-amd64
+      - name: Upload linux-amd64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./autoboard-${{ github.ref }}.linux-amd64
+          asset_name: autoboard-${{ github.ref }}.linux-amd64
+      - name: Upload windows-amd64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./autoboard-${{ github.ref }}.windows-amd64
+          asset_name: autoboard-${{ github.ref }}.windows-amd64
