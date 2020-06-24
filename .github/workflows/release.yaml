@@ -11,13 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Extract tag from ref
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.14.4"
-      - run: |
-          GOOS=darwin GOARCH=amd64 go build -o autoboard-${{ github.ref }}.darwin-amd64
-          GOOS=linux GOARCH=amd64 go build -o autoboard-${{ github.ref }}.linux-amd64
-          GOOS=windows GOARCH=amd64 go build -o autoboard-${{ github.ref }}.windows-amd64
+      - run: GOOS=darwin GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.darwin-amd64
+      - run: GOOS=linux GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.linux-amd64
+      - run: GOOS=windows GOARCH=amd64 go build -o autoboard-${{ steps.vars.outputs.tag }}.windows-amd64
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -25,7 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: ${{ github.ref }}
           draft: false
           prerelease: false
       - name: Upload darwin-amd64
@@ -34,21 +36,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./autoboard-${{ github.ref }}.darwin-amd64
-          asset_name: autoboard-${{ github.ref }}.darwin-amd64
+          asset_path: ./autoboard-${{ steps.vars.outputs.tag }}.darwin-amd64
+          asset_name: autoboard-${{ steps.vars.outputs.tag }}.darwin-amd64
+          asset_content_type: application/octet-stream
       - name: Upload linux-amd64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./autoboard-${{ github.ref }}.linux-amd64
-          asset_name: autoboard-${{ github.ref }}.linux-amd64
+          asset_path: ./autoboard-${{ steps.vars.outputs.tag }}.linux-amd64
+          asset_name: autoboard-${{ steps.vars.outputs.tag }}.linux-amd64
+          asset_content_type: application/octet-stream
       - name: Upload windows-amd64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./autoboard-${{ github.ref }}.windows-amd64
-          asset_name: autoboard-${{ github.ref }}.windows-amd64
+          asset_path: ./autoboard-${{ steps.vars.outputs.tag }}.windows-amd64
+          asset_name: autoboard-${{ steps.vars.outputs.tag }}.windows-amd64
+          asset_content_type: application/octet-stream
