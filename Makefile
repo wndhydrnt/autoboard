@@ -1,18 +1,19 @@
 VERSION ?= $(shell git branch --show-current)
 GIT_COMMIT ?= $(shell git rev-list -1 HEAD)
 BUILD_DATE ?= $(shell date)
+LDFLAGS=-ldflags "-X 'github.com/wndhydrnt/autoboard/cmd.BuildDate=${BUILD_DATE}' -X 'github.com/wndhydrnt/autoboard/cmd.BuildHash=${GIT_COMMIT}' -X 'github.com/wndhydrnt/autoboard/cmd.Version=${VERSION}'"
 
 build:
-	go build -ldflags "-X 'github.com/wndhydrnt/autoboard/cmd.BuildDate=${BUILD_DATE}' -X 'github.com/wndhydrnt/autoboard/cmd.BuildHash=${GIT_COMMIT}' -X 'github.com/wndhydrnt/autoboard/cmd.Version=${VERSION}'"
+	go build ${LDFLAGS}
 
 build_darwin:
-	GOOS=darwin GOARCH=amd64 go build -o autoboard-${VERSION}.darwin-amd64
+	GOOS=darwin GOARCH=amd64 go build ${LDFLAGS} -o autoboard-${VERSION}.darwin-amd64
 
 build_linux:
-	GOOS=linux GOARCH=amd64 go build -o autoboard-${VERSION}.linux-amd64
+	GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o autoboard-${VERSION}.linux-amd64
 
 build_windows:
-	GOOS=windows GOARCH=amd64 go build -o autoboard-${VERSION}.windows-amd64
+	GOOS=windows GOARCH=amd64 go build ${LDFLAGS} -o autoboard-${VERSION}.windows-amd64
 
 .PHONY: test
 test:
